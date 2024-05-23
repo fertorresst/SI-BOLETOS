@@ -7,3 +7,28 @@
   font-family: 'Martian Mono', monospace;
   font-weight: 300;
 }
+
+.blueBack {
+  background-color: #0A263D !important;
+}
+
+.coyoteBack {
+  background-color: #8C6E39 !important;
+}
+
+.goldBack {
+  background-color: #FFD300 !important;
+}
+
+.blueText {
+  color: #0A263D !important;
+}
+
+.coyoteText {
+  color: #8C6E39 !important;
+}
+
+.goldText {
+  color: #FFD300 !important;
+}
+
