@@ -2,12 +2,6 @@
   <v-row>
     <v-col cols="12" align="center" justify="center">
       <ui-alert v-if="showAlert" class="alerta" />
-      <v-btn
-        color="primary"
-        @click="pruebaPago()"
-      >
-        PRUEBAS
-      </v-btn>
       <v-stepper
         v-model="e6"
         max-width="500"
@@ -670,7 +664,7 @@
                   v-for="(item, i) in selectedSeats"
                   :key="i"
                 >
-                  {{ item.name }}&nbsp;
+                  {{ item }}&nbsp;
                 </small>
               </v-col>
             </v-row>
@@ -958,7 +952,7 @@
           <small class="white--text">¿CUAL ES TU ASIENTO MAS COMODO?</small>
         </v-stepper-step>
 
-        <v-stepper-content step="6">
+        <v-stepper-content v-if="tipoViaje === 'redondo'" step="6">
           <v-card elevation="0" class="mb-5">
             <v-row class="fontTitle">
               <v-col cols="12">
@@ -1268,7 +1262,7 @@
                   v-for="(item, i) in selectedSeatsRegreso"
                   :key="i"
                 >
-                  {{ item.name }}&nbsp;
+                  {{ item }}&nbsp;
                 </small>
               </v-col>
             </v-row>
@@ -1563,39 +1557,29 @@
           complete-icon="mdi-check black--text"
           color="goldBack black--text"
         >
-          <strong class="white--text">IMPRIME TU BOLETO</strong>
+          <strong class="white--text">DESCARGA TU BOLETO</strong>
           <small class="white--text">DEBERÁ PRESENTARSE EL DIA DEL VIAJE</small>
         </v-stepper-step>
 
         <v-stepper-content :step="tipoViaje === 'sencillo' ? '6' : '9'">
           <v-card elevation="0" class="mb-5 fontDisplay">
-            <v-card-title class="d-flex justify-end align-end">
-              <strong>TOTAL: $ {{ routeSelected.price + (equipajeExtra * 100) }}</strong>
+            <v-card-title class="d-flex justify-center align-center">
+              <strong>COMPROBANTE</strong>
             </v-card-title>
 
-            <v-card-actions />
+            <v-card-actions class="d-flex justify-center align-center">
+              <v-btn
+                color="#8C6E39"
+                class="white--text mb-4 fontTitle"
+                elevation="0"
+                width="122px"
+                rounded
+                @click="descargarComprobante()"
+              >
+                DESCARGAR
+              </v-btn>
+            </v-card-actions>
           </v-card>
-
-          <v-btn
-            color="#8C6E39"
-            class="black--text mb-4 fontTitle"
-            elevation="0"
-            rounded
-            text
-            @click="tipoViaje === 'sencillo' ? e6 = 4 : e6 = 7"
-          >
-            ATRÁS
-          </v-btn>
-          <v-btn
-            color="#8C6E39"
-            class="white--text mb-4 fontTitle"
-            elevation="0"
-            width="122px"
-            rounded
-            @click="validarPago()"
-          >
-            PAGAR
-          </v-btn>
         </v-stepper-content>
       </v-stepper>
     </v-col>
@@ -1603,6 +1587,7 @@
 </template>
 
 <script>
+import JsPDF from 'jspdf'
 import { mask } from 'vue-the-mask'
 import { mapState } from 'vuex'
 import moment from 'moment'
@@ -1788,8 +1773,8 @@ export default {
       // ACTUALIZAR BASE DE DATOS
       token: '',
       user: {},
-      reservation: [],
-      reservationRegreso: []
+      reservation: {},
+      reservationRegreso: {}
     }
   },
 
@@ -1890,7 +1875,7 @@ export default {
         } else if (this.selectedSeats.length < this.pasajerosViaje) {
           // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
           this.seats[i].selected = true
-          this.selectedSeats.push(this.seats[i])
+          this.selectedSeats.push(this.seats[i].name)
         }
       } else if (this.e6 === 6 && this.tipoViaje === 'redondo') {
         if (this.seatsRegreso[i].unavailable) {
@@ -1904,7 +1889,7 @@ export default {
         } else if (this.selectedSeatsRegreso.length < this.pasajerosViaje) {
           // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
           this.seatsRegreso[i].selected = true
-          this.selectedSeatsRegreso.push(this.seats[i])
+          this.selectedSeatsRegreso.push(this.seatsRegreso[i].name)
         }
       }
     },
@@ -2082,8 +2067,7 @@ export default {
         costo: this.total,
         routeId: this.routeSelected.routeId
       }
-      let reservation = await this.agregarReservacion(urlReservation, dataReservation)
-      this.reservation = reservation
+      await this.agregarReservacion(urlReservation, dataReservation, 1)
 
       if (this.tipoViaje === 'redondo') {
         dataReservation = {
@@ -2097,8 +2081,7 @@ export default {
           costo: this.total,
           routeId: this.routeSelectedRegreso.routeId
         }
-        reservation = await this.agregarReservacion(urlReservation, dataReservation)
-        this.reservationRegreso = reservation
+        await this.agregarReservacion(urlReservation, dataReservation, 2)
       }
 
       const urlRoute = '/update-route'
@@ -2121,13 +2104,19 @@ export default {
         }
         await this.actualizarRoute(urlRoute, dataRoute)
       }
+      this.dialogPay = false
+      this.tipoViaje === 'sencillo' ? this.e6 = 6 : this.e6 = 9
     },
 
-    agregarReservacion (url, data) {
-      this.$axios.post(url, data)
+    async agregarReservacion (url, data, tipo) {
+      await this.$axios.post(url, data)
         .then((res) => {
           if (res.data.success) {
-            return res.data.reservation
+            if (tipo === 1) {
+              this.reservation = res.data.reservation
+            } else if (tipo === 2) {
+              this.reservationRegreso = res.data.reservation
+            }
           }
         })
         .catch((error) => {
@@ -2177,6 +2166,34 @@ export default {
         // eslint-disable-next-line no-console
         console.error('Error al validar el pago:', error)
       }
+    },
+
+    descargarComprobante () {
+      const doc = new JsPDF()
+
+      // Agregar datos de la reserva al PDF
+      doc.text('COMPROBANTE DE RESERVA', 10, 10)
+      doc.text(`ID: ${this.reservation.routeId}`, 10, 20)
+      doc.text(`USUARIO: ${this.reservation.user}`, 10, 30)
+      doc.text(`ORIGEN: ${this.reservation.origen}`, 10, 50)
+      doc.text(`DESTINO: ${this.reservation.destino}`, 10, 60)
+      doc.text(`PRECIO: ${this.reservation.costo}`, 10, 70)
+      doc.text(`ASIENTOS: ${this.reservation.asientos}`, 10, 70)
+
+      // Si es viaje redondo, agregar datos de la reserva de regreso
+      if (this.tipoViaje === 'redondo' && this.reservationRegreso) {
+        doc.text('', 10, 80) // Espacio en blanco
+        doc.text('COMPROBANTE DE RESERVA - REGRESO', 10, 90)
+        doc.text(`ID: ${this.reservationRegreso.routeId}`, 10, 100)
+        doc.text(`USUARIO: ${this.reservationRegreso.user}`, 10, 110)
+        doc.text(`ORIGEN: ${this.reservationRegreso.origen}`, 10, 130)
+        doc.text(`DESTINO: ${this.reservationRegreso.destino}`, 10, 140)
+        doc.text(`PRECIO: ${this.reservationRegreso.costo}`, 10, 150)
+        doc.text(`ASIENTOS: ${this.reservationRegreso.asientos}`, 10, 70)
+      }
+
+      // Descargar el PDF
+      doc.save('comprobante.pdf')
     }
   }
 }

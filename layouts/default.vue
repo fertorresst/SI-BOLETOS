@@ -370,6 +370,11 @@ export default {
       fixed: false,
       items: [
         {
+          icon: 'mdi-home',
+          title: 'PAGINA PRINCIPAL',
+          to: '/'
+        },
+        {
           icon: 'mdi-account',
           title: 'MI PERFIL',
           to: '/profile'
@@ -377,7 +382,7 @@ export default {
         {
           icon: 'mdi-ticket',
           title: 'MIS BOLETOS',
-          to: '/mis-boletos'
+          to: '/dashboard/boletos'
         }
       ],
       miniVariant: false,
