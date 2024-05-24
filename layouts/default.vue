@@ -1,89 +1,226 @@
 <template>
-  <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+  <v-app>
     <v-app-bar
-      :clipped-left="clipped"
-      fixed
+      elevation="0"
       app
+      absolute
+      dense
+      dark
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-col cols="1" class="mr-16" />
+      <v-col cols="2">
+        <v-btn elevation="0" x-small width="1px">
+          <v-icon>mdi-facebook</v-icon>
+        </v-btn>
+        <v-btn elevation="0" x-small width="1px">
+          <v-icon>mdi-instagram</v-icon>
+        </v-btn>
+      </v-col>
+
+      <v-col cols="1" />
       <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
+
+      <span class="fontTitle" style="font-size: 12px;">
+        <v-icon>mdi-email</v-icon>
+        <a href="" style="text-decoration: none; color: white;">contacto@example.com</a>&nbsp;
+        <v-icon>mdi-phone</v-icon>
+        <a href="" style="text-decoration: none; color: white;">456 XXX XXX</a>&nbsp;
+        <v-icon>mdi-whatsapp</v-icon>
+        <a href="" style="text-decoration: none; color: white;">477 XXX XXX</a>&nbsp;
+      </span>
+
+      <v-col cols="1" class="ml-16" />
     </v-app-bar>
+
+    <v-app-bar
+      prominent
+      elevation="1"
+      class="ma-0 pa-0"
+      style="top: 48px; padding: 0 !important"
+    >
+      <v-col cols="1" class="mr-16" />
+      <v-col cols="2">
+        <a href="/">
+          <v-img
+            :src="require('@/assets/logo.svg')"
+            class="logoAppBar"
+          />
+        </a>
+      </v-col>
+
+      <v-col cols="1" />
+
+      <v-col cols="4" class="fontTitle vinculosSpan d-flex justify-space-around">
+        <a href="" class="vinculosAppBar">
+          <v-icon color="black">
+            mdi-home
+          </v-icon>
+          INICIO
+        </a>
+        <a href="" class="vinculosAppBar">
+          <v-icon color="black">
+            mdi-calendar
+          </v-icon>
+          EVENTOS
+        </a>
+        <a href="" class="vinculosAppBar">
+          <v-icon color="black">
+            mdi-beach
+          </v-icon>
+          BENEFICIOS
+        </a>
+        <a href="" class="vinculosAppBar">
+          <v-icon color="black">
+            mdi-domain
+          </v-icon>
+          NOSOTROS
+        </a>
+        <a href="" class="vinculosAppBar">
+          <v-icon color="black">
+            mdi-help
+          </v-icon>
+          AYUDA
+        </a>
+      </v-col>
+
+      <v-col cols="2" class="botonesAppBar">
+        <v-row>
+          <v-btn
+            rounded
+            outlined
+            width="158"
+            small
+            elevation="0"
+          >
+            <v-icon>
+              mdi-account
+            </v-icon>
+            <span>&nbsp;INICIAR SESIÓN</span>
+          </v-btn>
+        </v-row>
+
+        <v-row class="py-5">
+          <v-btn
+            small
+            rounded
+            width="158"
+            elevation="0"
+            color="#03c6a6"
+          >
+            <span>REGISTRASE</span>
+          </v-btn>
+        </v-row>
+      </v-col>
+
+      <v-col cols="1" class="ml-16" />
+    </v-app-bar>
+
     <v-main>
       <v-container>
         <Nuxt />
       </v-container>
     </v-main>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+
     <v-footer
-      :absolute="!fixed"
-      app
+      dark
+      padless
+      class="pa-10"
     >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
+      <v-container
+        class="white--text containerFooter"
+      >
+        <v-col cols="6">
+          <v-row>
+            <a href="/">
+              <v-img
+                :src="require('@/assets/logo.svg')"
+              />
+            </a>
+          </v-row>
+
+          <v-row class="my-10 mb-16 align-center justify-start">
+            <v-btn icon x-small class="mr-3">
+              <v-icon>mdi-facebook</v-icon>
+            </v-btn>
+
+            <v-btn icon x-small>
+              <v-icon>mdi-instagram</v-icon>
+            </v-btn>
+          </v-row>
+
+          <v-row class="fontDisplay">
+            <span style="font-size: 10px;">Operadora Turística Abejas Pro Max SA de CV</span>
+          </v-row>
+        </v-col>
+
+        <v-col cols="3">
+          <v-row class="fontDisplay text-center vinculosFooter">
+            <strong class="fontTitle mb-3">AYUDA</strong>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              Nosotros
+            </a>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              Contacto
+            </a>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              Iniciar Sesión
+            </a>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              Regístrate Gratis
+            </a>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              Beneficios
+            </a>
+          </v-row>
+        </v-col>
+
+        <v-col cols="3">
+          <v-row class="fontDisplay text-center vinculosFooter">
+            <strong class="fontTitle mb-3">INFORMACION LEGAL</strong>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              Preguntas Frecuentes
+            </a>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              TÉRMINOS Y CONDICIONES
+            </a>
+            <a
+              href=""
+              class="fontTitle"
+              style="font-size: 12px; text-decoration: none; color: white;"
+            >
+              AVISO DE PRIVACIDAD
+            </a>
+          </v-row>
+        </v-col>
+      </v-container>
     </v-footer>
   </v-app>
 </template>
@@ -116,3 +253,48 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.logoAppBar {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.vinculosAppBar {
+  text-decoration: none;
+  color: black;
+}
+
+.vinculosSpan {
+  position: relative;
+  margin: 0;
+  font-size: 12px;
+  top: 50%;
+  transform: translate(0, -50%);
+  display: flex;
+  justify-content: space-around;
+}
+
+.botonesAppBar {
+  position: relative;
+  top: 57%;
+  right: -9%;
+  transform: translate(0, -50%);
+}
+
+.containerFooter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.vinculosFooter {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+</style>
