@@ -2,12 +2,6 @@
   <v-row>
     <v-col cols="12" align="center" justify="center">
       <ui-alert v-if="showAlert" class="alerta" />
-      <v-btn
-        color="primary"
-        @click="fechaFormateada(fechaSalidaViaje)"
-      >
-        PRUEBAS
-      </v-btn>
       <v-stepper
         v-model="e6"
         max-width="500"
@@ -670,7 +664,7 @@
                   v-for="(item, i) in selectedSeats"
                   :key="i"
                 >
-                  {{ item.name }}&nbsp;
+                  {{ item }}&nbsp;
                 </small>
               </v-col>
             </v-row>
@@ -784,7 +778,8 @@
         </v-stepper-step>
 
         <v-stepper-content
-          step="2"
+          v-if="tipoViaje === 'redondo'"
+          step="5"
           class="fontDisplay"
         >
           <small><strong>{{ fechaFormateada(fechaRegresoViaje) }}</strong></small>
@@ -810,7 +805,7 @@
 
           <v-row>
             <v-col
-              v-for="r in routes"
+              v-for="r in routesRegreso"
               :key="r.routeId"
               cols="12"
             >
@@ -874,7 +869,7 @@
             elevation="0"
             width="122px"
             rounded
-            @click="e6 = 1"
+            @click="e6 = 4"
           >
             ATRÁS
           </v-btn>
@@ -945,24 +940,353 @@
         </v-stepper-content>
 
         <!-- STEP ASIENTOS REDONDO -->
-        <v-stepper-step v-if="tipoViaje === 'redondo'" step="6">
-          ELIGE TUS ASIENTO(S) DE REGRESO
+        <v-stepper-step
+          v-if="tipoViaje === 'redondo'"
+          :complete="e6 > 6"
+          step="6"
+          class="blueBack fontTitle"
+          complete-icon="mdi-check black--text"
+          color="goldBack black--text"
+        >
+          <strong class="white--text">ELIGE TUS ASIENTOS DE REGRESO</strong>
+          <small class="white--text">¿CUAL ES TU ASIENTO MAS COMODO?</small>
         </v-stepper-step>
 
         <v-stepper-content v-if="tipoViaje === 'redondo'" step="6">
-          <v-card
-            color="grey lighten-1"
-            class="mb-12"
-            height="200px"
-          />
+          <v-card elevation="0" class="mb-5">
+            <v-row class="fontTitle">
+              <v-col cols="12">
+                <h1>ADELANTE</h1>
+              </v-col>
+            </v-row>
+
+            <v-row class="fontDisplay" align="center" justify="center" style="max-width: 160px;">
+              <v-col cols="3">
+                <v-btn
+                  class="white--text blueBack mb-2"
+                  elevation="0"
+                  rounded
+                  icon
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[1].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[1])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(1)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[4].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[4])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(4)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[7].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[7])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(7)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[10].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[10])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(10)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[13].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[13])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(13)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+              </v-col>
+
+              <v-col cols="3">
+                <v-btn
+                  color="#0A263D"
+                  class="white--text mb-2"
+                  elevation="0"
+                  disabled
+                  rounded
+                  icon
+                />
+
+                <v-btn
+                  :class="seatsRegreso[2].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[2])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(2)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[5].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[5])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(5)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[8].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[8])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(8)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[11].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[11])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(11)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[14].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[14])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(14)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+              </v-col>
+
+              <v-col cols="3">
+                <v-btn
+                  color="#0A263D"
+                  class="white--text mb-2"
+                  elevation="0"
+                  disabled
+                  rounded
+                  icon
+                />
+
+                <v-btn
+                  :class="seatsRegreso[3].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[3])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(3)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  color="#0A263D"
+                  class="white--text mb-2"
+                  elevation="0"
+                  disabled
+                  rounded
+                  icon
+                />
+
+                <v-btn
+                  color="#0A263D"
+                  class="white--text mb-2"
+                  elevation="0"
+                  disabled
+                  rounded
+                  icon
+                />
+
+                <v-btn
+                  color="#0A263D"
+                  class="white--text mb-2"
+                  elevation="0"
+                  disabled
+                  rounded
+                  icon
+                />
+
+                <v-btn
+                  :class="seatsRegreso[15].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[15])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(15)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+              </v-col>
+
+              <v-col cols="3">
+                <v-btn
+                  :class="seatsRegreso[0].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[0])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(0)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  color="#0A263D"
+                  class="white--text mb-2"
+                  elevation="0"
+                  disabled
+                  rounded
+                  icon
+                />
+
+                <v-btn
+                  :class="seatsRegreso[6].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[6])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(6)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[9].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[9])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(9)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[12].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[12])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(12)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+
+                <v-btn
+                  :class="seatsRegreso[16].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[16])"
+                  elevation="0"
+                  outlined
+                  rounded
+                  icon
+                  @click="toggleSeat(16)"
+                >
+                  <v-icon>mdi-seat</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-row class="fontTitle">
+              <v-col cols="12">
+                <h1>ATRÁS</h1>
+              </v-col>
+            </v-row>
+
+            <v-divider inset />
+
+            <v-row align="center" justify="center" style="max-width: 300px;">
+              <v-col cols="12">
+                <v-list>
+                  <v-list-item-group small class="fontDisplay">
+                    <v-list-item
+                      v-for="(item, i) in itemsInfoStep3"
+                      :key="i"
+                    >
+                      <v-list-item-icon>
+                        <v-icon :color="item.color">
+                          {{ item.icon }}
+                        </v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title class="text-start black--text">
+                          {{ item.text }}
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-col>
+            </v-row>
+
+            <v-row align="center" justify="center" class="fontDisplay" style="max-width: 300px;">
+              <v-col
+                cols="12"
+              >
+                <small>ASIENTOS SELECCIONADOS:</small>
+                <br>
+                <small
+                  v-for="(item, i) in selectedSeatsRegreso"
+                  :key="i"
+                >
+                  {{ item }}&nbsp;
+                </small>
+              </v-col>
+            </v-row>
+          </v-card>
+
           <v-btn
-            color="primary"
-            @click="e6 = 1"
+            color="#8C6E39"
+            class="black--text mb-4 fontTitle"
+            elevation="0"
+            rounded
+            text
+            @click="e6 = 5"
           >
-            Continue
+            ATRÁS
           </v-btn>
-          <v-btn text>
-            Cancel
+          <v-btn
+            color="#8C6E39"
+            class="white--text mb-4 fontTitle"
+            elevation="0"
+            width="122px"
+            rounded
+            @click="validarAsientos()"
+          >
+            CONTINUAR
           </v-btn>
         </v-stepper-content>
 
@@ -970,7 +1294,7 @@
         <v-stepper-step
           v-if="tipoViaje === 'redondo'"
           :complete="e6 > 7"
-          step="4"
+          step="7"
           class="blueBack fontTitle"
           complete-icon="mdi-check black--text"
           color="goldBack black--text"
@@ -994,14 +1318,14 @@
             <v-card-text>
               <h4>¿CUANTOS PASAJEROS LLEVARAN EQUIPAJE EXTRA?</h4>
               <v-form
-                ref="formEquipaje"
-                v-model="validEquipaje"
+                ref="formEquipajeRegreso"
+                v-model="validEquipajeRegreso"
                 class="text-center black--text fontDisplay"
                 lazy-validation
                 @submit.prevent="submit"
               >
                 <v-text-field
-                  v-model="equipajeExtra"
+                  v-model="equipajeExtraRegreso"
                   type="number"
                   solo
                   flat
@@ -1023,7 +1347,7 @@
             elevation="0"
             rounded
             text
-            @click="e6 = 3"
+            @click="e6 = 6"
           >
             ATRÁS
           </v-btn>
@@ -1041,7 +1365,7 @@
 
         <!-- STEP PAGO -->
         <v-stepper-step
-          :complete="e6 > 7"
+          :complete="tipoViaje === 'sencillo' ? e6 > 5 : e6 > 8"
           :step="tipoViaje === 'sencillo' ? '5' : '8'"
           class="blueBack fontTitle"
           complete-icon="mdi-check black--text"
@@ -1053,81 +1377,87 @@
 
         <v-stepper-content :step="tipoViaje === 'sencillo' ? '5' : '8'">
           <v-card elevation="0" class="mb-5 fontDisplay">
-            <v-card-title class="d-flex justify-end align-end">
-              <strong>TOTAL: $ {{ total }}</strong>
+            <v-card-title class="d-flex justify-center align-center">
+              <strong>TICKETS</strong>
             </v-card-title>
             <v-img
+              v-if="Object.keys(routeSelected).length > 0"
+              :src="require('@/assets/back-credit-card.svg')"
+              class="mb-5"
+            >
+              <v-card-text rounded class="white--text text-start">
+                <strong class="text-center">VIAJE DE IDA</strong>
+                <br>
+                <br>
+                <small>
+                  TIPO DE VIAJE: {{ tipoViaje.toUpperCase() }}
+                  <br>
+                  ORIGEN: {{ routeSelected.origin }}
+                  <br>
+                  DESTINO: {{ routeSelected.destination }}
+                  <br>
+                  SALIDA: {{ fechaFormateada(routeSelected.departureTime) }} {{ getHour(routeSelected.departureTime) }}
+                  <br>
+                  LLEGADA: {{ fechaFormateada(routeSelected.arrivalTime) }} {{ getHour(routeSelected.arrivalTime) }}
+                  <br>
+                  PASAJEROS: {{ pasajerosViaje }}
+                  <br>
+                  ASIENTOS SELECCIONADOS:
+                  <small
+                    v-for="(item, i) in selectedSeats"
+                    :key="i"
+                  >
+                    &nbsp;{{ item.name }}
+                  </small>
+                  <br>
+                  PASAJEROS CON EQUIPAJE EXTRA: {{ equipajeExtra }}
+                </small>
+                <br>
+                <br>
+                <strong>TOTAL: ${{ (routeSelected.price * Number(pasajerosViaje)) + (Number(equipajeExtra) * 100) }}</strong>
+              </v-card-text>
+            </v-img>
+
+            <v-img
+              v-if="Object.keys(routeSelectedRegreso).length > 0"
               :src="require('@/assets/back-credit-card.svg')"
             >
               <v-card-text rounded class="white--text text-start">
-                <v-form
-                  ref="formPago"
-                  v-model="validPago"
-                  class="text-center fontDisplay"
-                  lazy-validation
-                  @submit.prevent="submit"
-                >
-                  <strong>TITULAR DE LA TARJETA:</strong>
-                  <v-text-field
-                    v-model="titularTarjeta"
-                    type="text"
-                    solo
-                    flat
-                    dense
-                    outlined
-                    rounded
-                    required
-                    :rules="requiredRule"
-                  />
-                  <strong>NUMERO DE LA TARJETA:</strong>
-                  <v-text-field
-                    v-model="numeroTarjeta"
-                    v-mask="'#### #### #### ####'"
-                    solo
-                    flat
-                    dense
-                    outlined
-                    rounded
-                    required
-                    :rules="requiredRule"
-                  />
-
-                  <v-row class="d-flex align-end">
-                    <v-col cols="6">
-                      <strong>VENCIMIENTO:</strong>
-                      <v-text-field
-                        v-model="vencimientoTarjeta"
-                        v-mask="'##/##'"
-                        solo
-                        flat
-                        dense
-                        outlined
-                        rounded
-                        required
-                        append-icon=""
-                        :rules="requiredRule"
-                      />
-                    </v-col>
-
-                    <v-col cols="6">
-                      <strong>CVV:</strong>
-                      <v-text-field
-                        v-model="cvvTarjeta"
-                        v-mask="'###'"
-                        solo
-                        flat
-                        dense
-                        outlined
-                        rounded
-                        required
-                        max="3"
-                        :rules="requiredRule"
-                      />
-                    </v-col>
-                  </v-row>
-                </v-form>
+                <strong class="text-center">VIAJE DE REGRESO</strong>
+                <br>
+                <br>
+                <small>
+                  TIPO DE VIAJE: {{ tipoViaje.toUpperCase() }}
+                  <br>
+                  ORIGEN: {{ routeSelectedRegreso.origin }}
+                  <br>
+                  DESTINO: {{ routeSelectedRegreso.destination }}
+                  <br>
+                  SALIDA: {{ fechaFormateada(routeSelectedRegreso.departureTime) }} {{ getHour(routeSelectedRegreso.departureTime) }}
+                  <br>
+                  LLEGADA: {{ fechaFormateada(routeSelectedRegreso.arrivalTime) }} {{ getHour(routeSelectedRegreso.arrivalTime) }}
+                  <br>
+                  PASAJEROS: {{ pasajerosViaje }}
+                  <br>
+                  ASIENTOS SELECCIONADOS:
+                  <small
+                    v-for="(item, i) in selectedSeatsRegreso"
+                    :key="i"
+                  >
+                    &nbsp;{{ item.name }}
+                  </small>
+                  <br>
+                  PASAJEROS CON EQUIPAJE EXTRA: {{ equipajeExtraRegreso }}
+                </small>
+                <br>
+                <br>
+                <strong>TOTAL: ${{ (routeSelectedRegreso.price * Number(pasajerosViaje)) + (Number(equipajeExtraRegreso) * 100) }}</strong>
               </v-card-text>
             </v-img>
+
+            <v-card-title class="d-flex align-end justify-end">
+              <strong>TOTAL: ${{ total }}</strong>
+            </v-card-title>
           </v-card>
 
           <v-btn
@@ -1150,49 +1480,106 @@
           >
             PAGAR
           </v-btn>
+          <v-dialog v-model="dialogPay" max-width="300" height="300" persistent>
+            <v-card v-if="successPay === ''" color="#0A263D" class="pa-5 fontDisplay">
+              <v-card-text align="center" justify="center" class="white--text">
+                <v-btn solo loading color="#0A263D" class="white--text" />
+                <br>
+                PROCESANDO PAGO
+                <br>
+                <br>
+                CIERRE EL POPUP PARA CONTINUAR
+              </v-card-text>
+            </v-card>
+
+            <v-card v-else-if="successPay === 'paid'" color="green darken-4" class="pa-5 fontDisplay">
+              <v-card-text align="center" justify="center" class="white--text">
+                <v-icon large color="white">
+                  mdi-check-circle-outline
+                </v-icon>
+                <br>
+                PAGO EXITOSO
+              </v-card-text>
+
+              <v-card-actions class="pb-0 mb-0">
+                <v-row align="center" justify="center">
+                  <v-col cols="12" align="center" justify="center">
+                    <v-btn
+                      color="#8C6E39"
+                      class="white--text mb-4 fontTitle"
+                      elevation="0"
+                      width="122px"
+                      rounded
+                      outlined
+                      @click="actualizarBD()"
+                    >
+                      CONTINUAR
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
+            </v-card>
+
+            <v-card v-else-if="successPay === 'unpaid'" color="red darken-4" class="pa-5 fontDisplay">
+              <v-card-text align="center" justify="center" class="white--text">
+                <v-icon large color="white">
+                  mdi-close-circle-outline
+                </v-icon>
+                <br>
+                PAGO CANCELADO
+              </v-card-text>
+
+              <v-card-actions class="pb-0 mb-0">
+                <v-row align="center" justify="center">
+                  <v-col cols="12" align="center" justify="center">
+                    <v-btn
+                      class="white--text mb-4 fontTitle"
+                      elevation="0"
+                      width="122px"
+                      rounded
+                      outlined
+                      @click="salirPago()"
+                    >
+                      SALIR
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-stepper-content>
 
         <!-- STEP IMPRIMIR COMPROBANTE -->
         <v-stepper-step
-          :complete="e6 > 7"
+          :complete="tipoViaje === 'sencillo' ? e6 > 6 : e6 > 9"
           :step="tipoViaje === 'sencillo' ? '6' : '9'"
           class="blueBack fontTitle"
           complete-icon="mdi-check black--text"
           color="goldBack black--text"
         >
-          <strong class="white--text">IMPRIME TU BOLETO</strong>
+          <strong class="white--text">DESCARGA TU BOLETO</strong>
           <small class="white--text">DEBERÁ PRESENTARSE EL DIA DEL VIAJE</small>
         </v-stepper-step>
 
         <v-stepper-content :step="tipoViaje === 'sencillo' ? '6' : '9'">
           <v-card elevation="0" class="mb-5 fontDisplay">
-            <v-card-title class="d-flex justify-end align-end">
-              <strong>TOTAL: $ {{ routeSelected.price + (equipajeExtra * 100) }}</strong>
+            <v-card-title class="d-flex justify-center align-center">
+              <strong>COMPROBANTE</strong>
             </v-card-title>
 
-            <v-card-actions />
+            <v-card-actions class="d-flex justify-center align-center">
+              <v-btn
+                color="#8C6E39"
+                class="white--text mb-4 fontTitle"
+                elevation="0"
+                width="122px"
+                rounded
+                @click="descargarComprobante()"
+              >
+                DESCARGAR
+              </v-btn>
+            </v-card-actions>
           </v-card>
-
-          <v-btn
-            color="#8C6E39"
-            class="black--text mb-4 fontTitle"
-            elevation="0"
-            rounded
-            text
-            @click="tipoViaje === 'sencillo' ? e6 = 4 : e6 = 7"
-          >
-            ATRÁS
-          </v-btn>
-          <v-btn
-            color="#8C6E39"
-            class="white--text mb-4 fontTitle"
-            elevation="0"
-            width="122px"
-            rounded
-            @click="validarPago()"
-          >
-            PAGAR
-          </v-btn>
         </v-stepper-content>
       </v-stepper>
     </v-col>
@@ -1200,6 +1587,7 @@
 </template>
 
 <script>
+import JsPDF from 'jspdf'
 import { mask } from 'vue-the-mask'
 import { mapState } from 'vuex'
 import moment from 'moment'
@@ -1232,7 +1620,7 @@ export default {
       itemsStep1: ['LEON', 'CIUDAD DE MEXICO', 'GUANAJUATO', 'MONTERREY'],
       fechaSalidaViaje: '',
       fechaRegresoViaje: '',
-      pasajerosViaje: 0,
+      pasajerosViaje: '',
       equipajeViaje: false,
 
       // STEP VIAJE IDA
@@ -1300,6 +1688,7 @@ export default {
       total: 0,
 
       // STEP VIAJE REGRESO
+      routesRegreso: [],
       routeSelectedRegreso: '',
 
       // STEP ASIENTOS REGRESO
@@ -1372,7 +1761,20 @@ export default {
       destinoRule: [
         v => !!v || 'EL DESTINO ES REQUERIDO',
         v => v !== this.origenViaje || 'EL DESTINO NO PUEDE SER IGUAL AL ORIGEN'
-      ]
+      ],
+
+      // STRIPE
+      stripeKey: 'sk_test_51PJU8CRwWA3gXNirOlh2sPZyDCUDVUZr64Z8p9WFSB0vg3JM7g05hjXHSDIC95WE1zlcJV8f5NojTo9PCrVjprxe00kCiFwhK1',
+      dialogPay: false,
+      urlPay: '',
+      sessionId: '',
+      successPay: '',
+
+      // ACTUALIZAR BASE DE DATOS
+      token: '',
+      user: {},
+      reservation: {},
+      reservationRegreso: {}
     }
   },
 
@@ -1386,6 +1788,8 @@ export default {
   watch: {
     showAlert () {}
   },
+
+  async mounted () {},
 
   methods: {
     mostrarAlerta (color, type, message) {
@@ -1434,7 +1838,17 @@ export default {
     },
 
     fechaFormateada (fecha) {
-      const fechaFormateada = moment(fecha).format('dddd D [de] MMMM [de] YYYY')
+      let date
+
+      // Verifica si la fecha es un timestamp de Firebase
+      if (fecha && typeof fecha === 'object' && '_seconds' in fecha && '_nanoseconds' in fecha) {
+        date = new Date(fecha._seconds * 1000 + fecha._nanoseconds / 1000000)
+      } else {
+        const fechaFormateada = moment(fecha).format('dddd D [de] MMMM [de] YYYY')
+        return fechaFormateada.toUpperCase()
+      }
+
+      const fechaFormateada = moment(date).format('dddd D [de] MMMM [de] YYYY')
       return fechaFormateada.toUpperCase()
     },
 
@@ -1449,18 +1863,34 @@ export default {
     },
 
     toggleSeat (i) {
-      if (this.seats[i].unavailable) {
-        return
-      }
+      if (this.e6 === 3) {
+        if (this.seats[i].unavailable) {
+          return
+        }
 
-      if (this.seats[i].selected) {
-        // Si el asiento está seleccionado, deseleccionarlo
-        this.seats[i].selected = false
-        this.selectedSeats = this.seats.filter(seat => seat.selected)
-      } else if (this.selectedSeats.length < this.pasajerosViaje) {
-        // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
-        this.seats[i].selected = true
-        this.selectedSeats.push(this.seats[i])
+        if (this.seats[i].selected) {
+          // Si el asiento está seleccionado, deseleccionarlo
+          this.seats[i].selected = false
+          this.selectedSeats = this.seats.filter(seat => seat.selected)
+        } else if (this.selectedSeats.length < this.pasajerosViaje) {
+          // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
+          this.seats[i].selected = true
+          this.selectedSeats.push(this.seats[i].name)
+        }
+      } else if (this.e6 === 6 && this.tipoViaje === 'redondo') {
+        if (this.seatsRegreso[i].unavailable) {
+          return
+        }
+
+        if (this.seatsRegreso[i].selected) {
+          // Si el asiento está seleccionado, deseleccionarlo
+          this.seatsRegreso[i].selected = false
+          this.selectedSeatsRegreso = this.seatsRegreso.filter(seat => seat.selected)
+        } else if (this.selectedSeatsRegreso.length < this.pasajerosViaje) {
+          // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
+          this.seatsRegreso[i].selected = true
+          this.selectedSeatsRegreso.push(this.seatsRegreso[i].name)
+        }
       }
     },
 
@@ -1479,7 +1909,12 @@ export default {
           .then((res) => {
             if (res.data.success) {
               this.routes = res.data.routes
-              if (this.e6 === 1) {
+              if (this.tipoViaje === 'redondo') {
+                this.cargarViajesRegreso()
+                if (this.routesRegreso.length > 0) {
+                  this.e6 = 2
+                }
+              } else {
                 this.e6 = 2
               }
             } else {
@@ -1490,9 +1925,30 @@ export default {
           .catch((error) => {
             // eslint-disable-next-line no-console
             console.log('ERROR => ', error)
-            this.mostrarAlerta('red', 'error', 'NO SE ENCONTRARON VIAJES')
+            this.mostrarAlerta('red', 'error', 'NO SE ENCONTRARON VIAJES DE IDA')
           })
       }
+    },
+
+    cargarViajesRegreso () {
+      const params = {
+        origenViaje: this.destinoViaje,
+        destinoViaje: this.origenViaje,
+        fechaSalidaViaje: this.fechaRegresoViaje,
+        pasajerosViaje: this.pasajerosViaje
+      }
+      const url = '/routes'
+      this.$axios.get(url, { params })
+        .then((res) => {
+          if (res.data.success) {
+            this.routesRegreso = res.data.routes
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('ERROR => ', error)
+          this.mostrarAlerta('red', 'error', 'NO SE ENCONTRARON VIAJES DE REGRESO')
+        })
     },
 
     moreInfo (route) {
@@ -1521,36 +1977,223 @@ export default {
     },
 
     validarAsientos () {
-      if (this.selectedSeats.length.toString() === this.pasajerosViaje) {
-        this.e6 = 4
-      } else {
-        this.mostrarAlerta('red', 'error', 'AUN NO SE SELECCIONAN TODOS LOS ASIENTOS SOLICITADOS')
-      }
-    },
-
-    validarEquipaje () {
-      this.validEquipaje = this.$refs.formEquipaje.validate()
-
-      if (this.validEquipaje) {
-        this.cargarViajes(this.destinoViaje, this.origenViaje, this.fechaRegresoViaje)
-        this.e6 = 5
-        if (this.total === 0) {
-          this.total += this.routeSelected.price + (this.equipajeExtra * 100)
+      if (this.e6 === 3) {
+        if (this.selectedSeats.length.toString() === this.pasajerosViaje) {
+          this.e6 = 4
+        } else {
+          this.mostrarAlerta('red', 'error', 'AUN NO SE SELECCIONAN TODOS LOS ASIENTOS SOLICITADOS')
+        }
+      } else if (this.e6 === 6) {
+        if (this.selectedSeatsRegreso.length.toString() === this.pasajerosViaje) {
+          this.e6 = 7
+        } else {
+          this.mostrarAlerta('red', 'error', 'AUN NO SE SELECCIONAN TODOS LOS ASIENTOS SOLICITADOS')
         }
       }
     },
 
-    validarPago () {
-      this.validPago = this.$refs.formPago.validate()
+    validarEquipaje () {
+      if (this.e6 === 4) {
+        this.validEquipaje = this.$refs.formEquipaje.validate()
 
-      if (this.validPago) {
-        this.actualizarBD()
-        this.e6 = 6
+        if (this.validEquipaje) {
+          if (this.total !== 0) {
+            this.total = 0
+          }
+          this.total = (this.routeSelected.price * Number(this.pasajerosViaje)) + (Number(this.equipajeExtra) * 100)
+          this.e6 = 5
+        }
+      } else if (this.e6 === 7 && this.tipoViaje === 'redondo') {
+        this.validEquipajeRegreso = this.$refs.formEquipajeRegreso.validate()
+
+        if (this.validEquipajeRegreso) {
+          if (this.total !== 0) {
+            this.total = 0
+          }
+          this.total = (this.routeSelected.price * Number(this.pasajerosViaje)) + (this.routeSelectedRegreso.price * Number(this.pasajerosViaje)) + ((Number(this.equipajeExtra) + Number(this.equipajeExtraRegreso)) * 100)
+
+          this.e6 = 8
+        }
       }
     },
 
-    actualizarBD () {
+    async validarPago () {
+      // if (this.total > 0) {
+      const data = {
+        name: 'VIAJE ' + this.tipoViaje.toUpperCase(),
+        description: 'VIAJE DE ' + this.origenViaje + ' A ' + this.destinoViaje,
+        unit_amount: this.total * 100
+      }
+      const url = '/create-checkout-session'
 
+      try {
+        const response = await this.$axios.post(url, data)
+        if (response.data.success) {
+          this.sessionId = response.data.session.id
+          this.urlPay = response.data.session.url
+          this.dialogPay = true
+          const popup = window.open(this.urlPay, 'PAGAR BOLETOS', 'width=600,height=700')
+          const interval = setInterval(() => {
+            if (popup.closed) {
+              clearInterval(interval)
+              this.pruebaPago()
+            }
+          }, 1000)
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error creating checkout session:', error)
+      }
+      // }
+    },
+
+    async actualizarBD () {
+      if (this.$store.state.user && this.$store.state.token) {
+        this.user = this.$store.state.user.id
+        this.token = this.$store.state.token
+      } else {
+        this.user = this.sessionId
+      }
+
+      const urlReservation = '/update-reservation'
+      let dataReservation = {
+        user: this.user,
+        token: this.token,
+        tipo: this.tipoViaje,
+        origen: this.origenViaje,
+        destino: this.destinoViaje,
+        pasajeros: this.pasajerosViaje,
+        asientos: this.selectedSeats,
+        costo: this.total,
+        routeId: this.routeSelected.routeId
+      }
+      await this.agregarReservacion(urlReservation, dataReservation, 1)
+
+      if (this.tipoViaje === 'redondo') {
+        dataReservation = {
+          user: this.user,
+          token: this.token,
+          tipo: this.tipoViaje,
+          origen: this.destinoViaje,
+          destino: this.origenViaje,
+          pasajeros: this.pasajerosViaje,
+          asientos: this.selectedSeatsRegreso,
+          costo: this.total,
+          routeId: this.routeSelectedRegreso.routeId
+        }
+        await this.agregarReservacion(urlReservation, dataReservation, 2)
+      }
+
+      const urlRoute = '/update-route'
+      let dataRoute = {
+        routeId: this.routeSelected.routeId,
+        selectedSeats: this.selectedSeats,
+        user: this.user,
+        availableSeats: this.routeSelected.seats.available - this.selectedSeats.length,
+        bookedSeats: this.routeSelected.seats.booked + this.selectedSeats.length
+      }
+      await this.actualizarRoute(urlRoute, dataRoute)
+
+      if (this.tipoViaje === 'redondo') {
+        dataRoute = {
+          routeId: this.routeSelectedRegreso.routeId,
+          selectedSeats: this.selectedSeatsRegreso,
+          user: this.user,
+          availableSeats: this.routeSelectedRegreso.seats.available - this.selectedSeatsRegreso.length,
+          bookedSeats: this.routeSelectedRegreso.seats.booked + this.selectedSeatsRegreso.length
+        }
+        await this.actualizarRoute(urlRoute, dataRoute)
+      }
+      this.dialogPay = false
+      this.tipoViaje === 'sencillo' ? this.e6 = 6 : this.e6 = 9
+    },
+
+    async agregarReservacion (url, data, tipo) {
+      await this.$axios.post(url, data)
+        .then((res) => {
+          if (res.data.success) {
+            if (tipo === 1) {
+              this.reservation = res.data.reservation
+            } else if (tipo === 2) {
+              this.reservationRegreso = res.data.reservation
+            }
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('ERROR AL AGREGAR RESERVACIÓN => ', error)
+          this.mostrarAlerta('red', 'error', 'ERROR AL AGREGAR RESERVACIÓN')
+        })
+    },
+
+    actualizarRoute (url, data) {
+      this.$axios.post(url, data)
+        .then((res) => {
+          if (res.data.success) {
+            // eslint-disable-next-line no-console
+            console.log('SUCCESS => ', res.data.message)
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('ERROR AL ACTUALIZAR RUTA => ', error)
+          this.mostrarAlerta('red', 'error', 'ERROR AL ACTUALIZAR RUTA')
+        })
+    },
+
+    salirPago () {
+      this.dialogPay = false
+      this.urlPay = ''
+      this.sessionId = ''
+      this.successPay = ''
+    },
+
+    async pruebaPago () {
+      const session = this.sessionId
+      try {
+        const res = await this.$axios.get(`https://api.stripe.com/v1/checkout/sessions/${session}`, {
+          headers: {
+            Authorization: `Bearer ${this.stripeKey}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        if (res.data.payment_status === 'paid') {
+          this.successPay = 'paid'
+        } else if (res.data.payment_status === 'unpaid') {
+          this.successPay = 'unpaid'
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error al validar el pago:', error)
+      }
+    },
+
+    descargarComprobante () {
+      const doc = new JsPDF()
+
+      // Agregar datos de la reserva al PDF
+      doc.text('COMPROBANTE DE RESERVA', 10, 10)
+      doc.text(`ID: ${this.reservation.routeId}`, 10, 20)
+      doc.text(`USUARIO: ${this.reservation.user}`, 10, 30)
+      doc.text(`ORIGEN: ${this.reservation.origen}`, 10, 50)
+      doc.text(`DESTINO: ${this.reservation.destino}`, 10, 60)
+      doc.text(`PRECIO: ${this.reservation.costo}`, 10, 70)
+      doc.text(`ASIENTOS: ${this.reservation.asientos}`, 10, 70)
+
+      // Si es viaje redondo, agregar datos de la reserva de regreso
+      if (this.tipoViaje === 'redondo' && this.reservationRegreso) {
+        doc.text('', 10, 80) // Espacio en blanco
+        doc.text('COMPROBANTE DE RESERVA - REGRESO', 10, 90)
+        doc.text(`ID: ${this.reservationRegreso.routeId}`, 10, 100)
+        doc.text(`USUARIO: ${this.reservationRegreso.user}`, 10, 110)
+        doc.text(`ORIGEN: ${this.reservationRegreso.origen}`, 10, 130)
+        doc.text(`DESTINO: ${this.reservationRegreso.destino}`, 10, 140)
+        doc.text(`PRECIO: ${this.reservationRegreso.costo}`, 10, 150)
+        doc.text(`ASIENTOS: ${this.reservationRegreso.asientos}`, 10, 70)
+      }
+
+      // Descargar el PDF
+      doc.save('comprobante.pdf')
     }
   }
 }

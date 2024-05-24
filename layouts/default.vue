@@ -345,7 +345,7 @@
         </v-card-title>
 
         <v-card-text class="py-2 white--text text-center coyoteBack">
-          {{ new Date().getFullYear() }} — <strong>Raites UG by Los Palomeros</strong>
+          {{ new Date().getFullYear() }} — <strong>BOLETOS DE VAN</strong>
         </v-card-text>
       </v-card>
     </v-footer>
@@ -370,6 +370,11 @@ export default {
       fixed: false,
       items: [
         {
+          icon: 'mdi-home',
+          title: 'PAGINA PRINCIPAL',
+          to: '/'
+        },
+        {
           icon: 'mdi-account',
           title: 'MI PERFIL',
           to: '/profile'
@@ -377,7 +382,7 @@ export default {
         {
           icon: 'mdi-ticket',
           title: 'MIS BOLETOS',
-          to: '/mis-boletos'
+          to: '/dashboard/boletos'
         }
       ],
       miniVariant: false,
