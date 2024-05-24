@@ -47,13 +47,52 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/google-fonts'
+    '@nuxtjs/google-fonts',
+    '@nuxtjs/auth'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/'
+    baseURL: 'http://localhost:5000/'
+  },
+
+  auth: {
+    redirect: {
+      login: '/',
+      callback: '/',
+      home: '/'
+    },
+    localStorage: false,
+    resetOnError: true,
+    strategies: {
+      local: {
+        cookie: false,
+        user: {
+          property: 'user'
+        },
+        token: {
+          property: 'token',
+          required: true
+        },
+        endpoints: {
+          login: {
+            url: '/login',
+            method: 'post',
+            propertyName: 'data.token'
+          },
+          logout: {
+            url: '/logout',
+            method: 'post'
+          },
+          user: false
+        },
+        tokenRequired: true,
+        tokenType: 'Bearer',
+        rewriteRedirects: true,
+        fullPathRedirect: true
+      }
+    }
   },
 
   googleFonts: {
