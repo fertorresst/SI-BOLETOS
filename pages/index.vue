@@ -1610,7 +1610,7 @@ export default {
   data () {
     return {
       // STEPPER
-      e6: 1,
+      e6: 3,
 
       // STEP RUTA
       validViaje: false,
@@ -1620,7 +1620,7 @@ export default {
       itemsStep1: ['LEON', 'CIUDAD DE MEXICO', 'GUANAJUATO', 'MONTERREY'],
       fechaSalidaViaje: '',
       fechaRegresoViaje: '',
-      pasajerosViaje: '',
+      pasajerosViaje: 5,
       equipajeViaje: false,
 
       // STEP VIAJE IDA
@@ -1871,7 +1871,7 @@ export default {
         if (this.seats[i].selected) {
           // Si el asiento está seleccionado, deseleccionarlo
           this.seats[i].selected = false
-          this.selectedSeats = this.seats.filter(seat => seat.selected)
+          this.selectedSeats = this.selectedSeats.filter(seat => seat !== this.seats[i].name)
         } else if (this.selectedSeats.length < this.pasajerosViaje) {
           // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
           this.seats[i].selected = true
@@ -1885,7 +1885,7 @@ export default {
         if (this.seatsRegreso[i].selected) {
           // Si el asiento está seleccionado, deseleccionarlo
           this.seatsRegreso[i].selected = false
-          this.selectedSeatsRegreso = this.seatsRegreso.filter(seat => seat.selected)
+          this.selectedSeatsRegreso = this.selectedSeatsRegreso.filter(seat => seat !== this.seats[i].name)
         } else if (this.selectedSeatsRegreso.length < this.pasajerosViaje) {
           // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
           this.seatsRegreso[i].selected = true
@@ -2106,6 +2106,8 @@ export default {
       }
       this.dialogPay = false
       this.tipoViaje === 'sencillo' ? this.e6 = 6 : this.e6 = 9
+      console.log('🚀 ~ .then ~ this.reservation:', this.reservation)
+      console.log('🚀 ~ .then ~ this.reservationRegreso:', this.reservationRegreso)
     },
 
     async agregarReservacion (url, data, tipo) {
@@ -2169,27 +2171,28 @@ export default {
     },
 
     descargarComprobante () {
-      const doc = new JsPDF()
+      const doc = new JsPDF('p', 'mm', 'letter') // Utiliza 'p' para orientación vertical y 'letter' para tamaño de papel
+      const margen = 15 // Establece un margen de 15 mm
 
-      // Agregar datos de la reserva al PDF
-      doc.text('COMPROBANTE DE RESERVA', 10, 10)
-      doc.text(`ID: ${this.reservation.routeId}`, 10, 20)
-      doc.text(`USUARIO: ${this.reservation.user}`, 10, 30)
-      doc.text(`ORIGEN: ${this.reservation.origen}`, 10, 50)
-      doc.text(`DESTINO: ${this.reservation.destino}`, 10, 60)
-      doc.text(`PRECIO: ${this.reservation.costo}`, 10, 70)
-      doc.text(`ASIENTOS: ${this.reservation.asientos}`, 10, 70)
+      // Agrega datos de la reserva al PDF
+      doc.text('COMPROBANTE DE RESERVA', margen, margen)
+      doc.text(`ID: ${this.reservation.routeId}`, margen, margen + 15)
+      doc.text(`USUARIO: ${this.reservation.user}`, margen, margen + 30)
+      doc.text(`ORIGEN: ${this.reservation.origen}`, margen, margen + 45)
+      doc.text(`DESTINO: ${this.reservation.destino}`, margen, margen + 60)
+      doc.text(`PRECIO: ${this.reservation.costo}`, margen, margen + 75)
+      doc.text(`ASIENTOS: ${this.reservation.asientos}`, margen, margen + 90)
 
       // Si es viaje redondo, agregar datos de la reserva de regreso
       if (this.tipoViaje === 'redondo' && this.reservationRegreso) {
-        doc.text('', 10, 80) // Espacio en blanco
-        doc.text('COMPROBANTE DE RESERVA - REGRESO', 10, 90)
-        doc.text(`ID: ${this.reservationRegreso.routeId}`, 10, 100)
-        doc.text(`USUARIO: ${this.reservationRegreso.user}`, 10, 110)
-        doc.text(`ORIGEN: ${this.reservationRegreso.origen}`, 10, 130)
-        doc.text(`DESTINO: ${this.reservationRegreso.destino}`, 10, 140)
-        doc.text(`PRECIO: ${this.reservationRegreso.costo}`, 10, 150)
-        doc.text(`ASIENTOS: ${this.reservationRegreso.asientos}`, 10, 70)
+        doc.text('', margen, margen + 105) // Espacio en blanco
+        doc.text('COMPROBANTE DE RESERVA - REGRESO', margen, margen + 120)
+        doc.text(`ID: ${this.reservationRegreso.routeId}`, margen, margen + 135)
+        doc.text(`USUARIO: ${this.reservationRegreso.user}`, margen, margen + 150)
+        doc.text(`ORIGEN: ${this.reservationRegreso.origen}`, margen, margen + 165)
+        doc.text(`DESTINO: ${this.reservationRegreso.destino}`, margen, margen + 180)
+        doc.text(`PRECIO: ${this.reservationRegreso.costo}`, margen, margen + 195)
+        doc.text(`ASIENTOS: ${this.reservationRegreso.asientos}`, margen, margen + 210)
       }
 
       // Descargar el PDF
