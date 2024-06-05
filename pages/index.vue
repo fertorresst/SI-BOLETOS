@@ -80,10 +80,10 @@
                 <v-row class="text-center" align="center" justify="center">
                   <v-col cols="12">
                     <h4>ORIGEN</h4>
-                    <v-select
+                    <v-combobox
                       v-model="origenViaje"
                       :items="itemsStep1"
-                      type="text"
+                      hide-selected
                       solo
                       flat
                       dense
@@ -93,10 +93,10 @@
                       :rules="origenRule"
                     />
                     <h4>DESTINO</h4>
-                    <v-select
+                    <v-combobox
                       v-model="destinoViaje"
                       :items="itemsStep1"
-                      type="text"
+                      hide-selected
                       solo
                       flat
                       dense
@@ -1610,7 +1610,7 @@ export default {
   data () {
     return {
       // STEPPER
-      e6: 3,
+      e6: 1,
 
       // STEP RUTA
       validViaje: false,
@@ -1620,7 +1620,7 @@ export default {
       itemsStep1: ['LEON', 'CIUDAD DE MEXICO', 'GUANAJUATO', 'MONTERREY'],
       fechaSalidaViaje: '',
       fechaRegresoViaje: '',
-      pasajerosViaje: 5,
+      pasajerosViaje: '',
       equipajeViaje: false,
 
       // STEP VIAJE IDA
@@ -1894,7 +1894,7 @@ export default {
       }
     },
 
-    cargarViajes (origen, destino, fecha) {
+    async cargarViajes (origen, destino, fecha) {
       this.validViaje = this.$refs.formViaje.validate()
 
       if (this.validViaje) {
@@ -1905,7 +1905,7 @@ export default {
           pasajerosViaje: this.pasajerosViaje
         }
         const url = '/routes'
-        this.$axios.get(url, { params })
+        await this.$axios.get(url, { params })
           .then((res) => {
             if (res.data.success) {
               this.routes = res.data.routes
@@ -1930,7 +1930,7 @@ export default {
       }
     },
 
-    cargarViajesRegreso () {
+    async cargarViajesRegreso () {
       const params = {
         origenViaje: this.destinoViaje,
         destinoViaje: this.origenViaje,
@@ -1938,7 +1938,7 @@ export default {
         pasajerosViaje: this.pasajerosViaje
       }
       const url = '/routes'
-      this.$axios.get(url, { params })
+      await this.$axios.get(url, { params })
         .then((res) => {
           if (res.data.success) {
             this.routesRegreso = res.data.routes
@@ -2059,9 +2059,10 @@ export default {
       let dataReservation = {
         user: this.user,
         token: this.token,
-        tipo: this.tipoViaje,
-        origen: this.origenViaje,
-        destino: this.destinoViaje,
+        tipo: this.tipoViaje.toUpperCase(),
+        origen: this.origenViaje.toUpperCase(),
+        destino: this.destinoViaje.toUpperCase(),
+        fechaSalida: this.routeSelected.departureTime,
         pasajeros: this.pasajerosViaje,
         asientos: this.selectedSeats,
         costo: this.total,
@@ -2073,9 +2074,10 @@ export default {
         dataReservation = {
           user: this.user,
           token: this.token,
-          tipo: this.tipoViaje,
-          origen: this.destinoViaje,
-          destino: this.origenViaje,
+          tipo: this.tipoViaje.toUpperCase(),
+          origen: this.destinoViaje.toUpperCase(),
+          destino: this.origenViaje.toUpperCase(),
+          fechaSalida: this.routeSelectedRegreso.departureTime,
           pasajeros: this.pasajerosViaje,
           asientos: this.selectedSeatsRegreso,
           costo: this.total,
@@ -2128,8 +2130,8 @@ export default {
         })
     },
 
-    actualizarRoute (url, data) {
-      this.$axios.post(url, data)
+    async actualizarRoute (url, data) {
+      await this.$axios.post(url, data)
         .then((res) => {
           if (res.data.success) {
             // eslint-disable-next-line no-console

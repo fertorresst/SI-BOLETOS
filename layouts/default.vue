@@ -17,9 +17,9 @@
               :src="user.img"
             />
           </v-list-item-avatar>
-          <v-list-item-content>
+          <v-list-item-content class="gray--text">
             <v-list-item-title class="fontTitle" color="black">
-              {{ user.name }} {{ user.apellidos }}
+              {{ user.nombre }} {{ user.apellidos }}
             </v-list-item-title>
             <v-list-item-subtitle class="fontTitle" color="black">
               {{ user.email }}
@@ -345,7 +345,7 @@
         </v-card-title>
 
         <v-card-text class="py-2 white--text text-center coyoteBack">
-          {{ new Date().getFullYear() }} — <strong>BOLETOS DE VAN</strong>
+          {{ new Date().getFullYear() }} — <strong>&COPY; BUS BEE</strong>
         </v-card-text>
       </v-card>
     </v-footer>
@@ -381,8 +381,8 @@ export default {
         },
         {
           icon: 'mdi-ticket',
-          title: 'MIS BOLETOS',
-          to: '/dashboard/boletos'
+          title: 'MIS TICKETS',
+          to: '/tickets'
         }
       ],
       miniVariant: false,
@@ -551,8 +551,6 @@ export default {
         }
         await this.$auth.loginWith('local', { data })
           .then((res) => {
-            // eslint-disable-next-line no-console
-            console.log('RES => ', res.data)
             if (res.data.success) {
               this.$store.commit('setUser', res.data.user)
               this.$store.commit('setToken', res.data.token)
@@ -574,6 +572,15 @@ export default {
             }
           })
       }
+    },
+
+    logOut () {
+      this.$store.commit('setUser', {})
+      this.$store.commit('setToken', null)
+      this.$auth.logout()
+      this.isLogged = false
+      this.mostrarAlerta('green', 'success', 'SESIÓN CERRADA CORRECTAMENTE')
+      this.$router.push('/')
     }
   }
 }
