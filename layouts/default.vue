@@ -14,15 +14,15 @@
         <v-list-item>
           <v-list-item-avatar>
             <v-img
-              :src="user.img"
+              :src="$store.state.user.img"
             />
           </v-list-item-avatar>
           <v-list-item-content class="gray--text">
             <v-list-item-title class="fontTitle" color="black">
-              {{ user.nombre }} {{ user.apellidos }}
+              {{ $store.state.user.nombre }} {{ $store.state.user.apellidos }}
             </v-list-item-title>
             <v-list-item-subtitle class="fontTitle" color="black">
-              {{ user.email }}
+              {{ $store.state.user.email }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -75,9 +75,13 @@
         </v-col>
 
         <v-col cols="4" align="center" justify="center">
-          <v-toolbar-title>
-            <span style="color: white;">{{ title }}</span>
-          </v-toolbar-title>
+          <v-img
+            :src="require('@/assets/logo.svg')"
+            contain
+            max-height="50px"
+            @click="$router.push('/')"
+            style="cursor: pointer;"
+          />
         </v-col>
 
         <v-col cols="4" align="center" justify="center">
@@ -104,7 +108,7 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container fluid>
         <Nuxt />
         <ui-alert v-if="showAlert" class="alerta" />
       </v-container>
