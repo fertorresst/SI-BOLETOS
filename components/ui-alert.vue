@@ -5,6 +5,7 @@
     :icon="icon"
     rounded
     transition="scale-transition"
+    style="position: absolute !important;"
   >
     {{ mensaje }}
   </v-alert>

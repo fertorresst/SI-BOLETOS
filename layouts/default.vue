@@ -1,14 +1,14 @@
 <template>
-  <v-app>
+  <v-app class="ma-0 pa-0">
     <v-navigation-drawer
       v-if="isLogged"
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
-      relative
-      app
+      absolute
       width="20%"
-      style="z-index: 1000;"
+      color="#0A263D"
+      style="z-index: 1000; color: white;"
     >
       <v-list>
         <v-list-item>
@@ -50,15 +50,9 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-      :clipped-left="clipped"
-      absolute
-      app
-      flat
-      color="#0A263D"
-    >
+    <v-app-bar :clipped-left="clipped" app fixed color="#0A263D">
       <v-row>
-        <v-col cols="4" align="center" justify="center">
+        <v-col cols="1" align="center" justify="center">
           <v-app-bar-nav-icon
             v-if="isLogged"
             color="#FFD300"
@@ -74,17 +68,17 @@
           </v-btn>
         </v-col>
 
-        <v-col cols="4" align="center" justify="center">
+        <v-col cols="10" align="center" justify="center">
           <v-img
             :src="require('@/assets/logo.svg')"
             contain
             max-height="50px"
-            @click="$router.push('/')"
             style="cursor: pointer;"
+            @click="$router.push('/')"
           />
         </v-col>
 
-        <v-col cols="4" align="center" justify="center">
+        <v-col cols="1" align="center" justify="center">
           <v-btn
             v-if="isLogged"
             elevation="0"
@@ -107,38 +101,30 @@
       </v-row>
     </v-app-bar>
 
-    <v-main>
-      <v-container fluid>
-        <Nuxt />
-        <ui-alert v-if="showAlert" class="alerta" />
-      </v-container>
+    <v-main class="mb-0 pb-0">
+      <Nuxt />
+      <ui-alert v-if="showAlert" class="alerta" />
     </v-main>
 
     <v-dialog v-if="!isLogged" v-model="registerDialog" persistent max-width="400px">
-      <v-card rounded flat class="pa-0">
-        <v-card-title class="blueBack">
-          <v-row>
-            <v-col cols="12" class="text-center mb-2">
-              <strong class="white--text fontTitle" style="font-size: 25px;">
-                REGÍSTRATE
-              </strong>
-            </v-col>
+      <v-card rounded flat class="ma-0 pa-0">
+        <v-card-title class="blueBack ma-0 pa-5 align-center justify-center">
+          <v-row class="ma-0 pa-0 align-center justify-center white--text fontDisplay" style="font-size: 20px">
+            REGISTRO
           </v-row>
         </v-card-title>
 
-        <v-card-subtitle class="text-center white--text blueBack fontDisplay">
-          Es gratis
-        </v-card-subtitle>
-
-        <v-card-text class="pa-5 pb-0">
+        <v-card-text class="ma-0 py-3 px-10">
           <v-form
             ref="formRegister"
             v-model="validRegister"
-            class="text-center black--text fontDisplay"
+            class="text-center black--text fontDisplay ma-0 pa-0"
             lazy-validation
             @submit.prevent="submit"
           >
-            <h4>NOMBRE</h4>
+            <h5 class="ma-0 pa-0">
+              NOMBRE
+            </h5>
             <v-text-field
               v-model="nombreRegister"
               type="text"
@@ -149,9 +135,12 @@
               rounded
               required
               :rules="requiredRule"
+              class="ma-0 pa-0"
             />
 
-            <h4>APELLIDOS</h4>
+            <h5 class="ma-0 pa-0">
+              APELLIDOS
+            </h5>
             <v-text-field
               v-model="apellidosRegister"
               type="text"
@@ -162,9 +151,12 @@
               rounded
               required
               :rules="requiredRule"
+              class="ma-0 pa-0"
             />
 
-            <h4>TELEFONO</h4>
+            <h5 class="ma-0 pa-0">
+              TELEFONO
+            </h5>
             <v-text-field
               v-model="phoneRegister"
               type="text"
@@ -175,11 +167,15 @@
               rounded
               required
               :rules="phoneRule"
+              class="ma-0 pa-0"
             />
 
-            <h4>FECHA DE NACIMIENTO</h4>
+            <h5 class="ma-0 pa-0">
+              FECHA DE NACIMIENTO
+            </h5>
             <v-text-field
               v-model="cumpleRegister"
+              prepend-inner-icon="mdi-calendar"
               type="date"
               solo
               flat
@@ -188,9 +184,12 @@
               rounded
               required
               :rules="requiredRule"
+              class="ma-0 pa-0"
             />
 
-            <h4>CORREO</h4>
+            <h5 class="ma-0 pa-0">
+              CORREO
+            </h5>
             <v-text-field
               v-model="emailRegister"
               type="email"
@@ -201,9 +200,12 @@
               rounded
               required
               :rules="emailRule"
+              class="ma-0 pa-0"
             />
 
-            <h4>CONTRASEÑA</h4>
+            <h5 class="ma-0 pa-0">
+              CONTRASEÑA
+            </h5>
             <v-text-field
               v-model="passwordRegister"
               type="password"
@@ -214,9 +216,12 @@
               rounded
               required
               :rules="passwordRule"
+              class="ma-0 pa-0"
             />
 
-            <h4>CONFIRMAR CONTRASEÑA</h4>
+            <h5 class="ma-0 pa-0">
+              CONFIRMAR CONTRASEÑA
+            </h5>
             <v-text-field
               v-model="passwordConfirmRegister"
               type="password"
@@ -227,29 +232,33 @@
               rounded
               required
               :rules="passwordConfirmRule"
+              class="ma-0 pa-0"
             />
           </v-form>
         </v-card-text>
 
-        <v-card-actions class="pa-0 ma-0 fontDisplay" align="center" justify="center">
-          <v-col cols="12" class="pb-8">
+        <v-card-actions class="pa-0 ma-0 px-10 fontDisplay" align="center" justify="center">
+          <v-col cols="6" class="ma-0 pa-0 pb-8">
+            <v-btn
+              class="black--text"
+              text
+              rounded
+              width="100%"
+              @click="limpiarTodo"
+            >
+              CANCELAR
+            </v-btn>
+          </v-col>
+
+          <v-col cols="6" class="ma-0 pa-0 pb-8">
             <v-btn
               color="#8C6E39"
               class="white--text"
-              width="122px"
+              width="100%"
               rounded
               @click="registrar()"
             >
               REGISTRAR
-            </v-btn>
-
-            <v-btn
-              class="black--text"
-              text
-              width="122px"
-              @click="limpiarTodo"
-            >
-              CANCELAR
             </v-btn>
           </v-col>
         </v-card-actions>
@@ -257,30 +266,24 @@
     </v-dialog>
 
     <v-dialog v-if="!isLogged" v-model="loginDialog" persistent max-width="400px">
-      <v-card rounded flat class="pa-0">
-        <v-card-title class="blueBack">
-          <v-row>
-            <v-col cols="12" class="text-center mb-2">
-              <strong class="white--text fontTitle" style="font-size: 25px;">
-                LOGIN
-              </strong>
-            </v-col>
+      <v-card rounded flat class="ma-0 pa-0">
+        <v-card-title class="ma-0 pa-0 blueBack">
+          <v-row class="ma-0 pa-5 white--text fontTitle align-center justify-center" style="font-size: 25px;">
+            LOGIN
           </v-row>
         </v-card-title>
 
-        <v-card-subtitle class="text-center white--text blueBack fontDisplay">
-          INTRODUCE TUS CREDENCIALES
-        </v-card-subtitle>
-
-        <v-card-text class="pa-5 pb-0">
+        <v-card-text class="ma-0 pa-10">
           <v-form
             ref="formLogin"
             v-model="validLogin"
-            class="text-center black--text fontDisplay"
+            class="text-center black--text fontDisplay ma-0 pa-0"
             lazy-validation
             @submit.prevent="submit"
           >
-            <h4>CORREO</h4>
+            <h5 class="ma-0 pa-0">
+              CORREO
+            </h5>
             <v-text-field
               v-model="emailLogin"
               type="email"
@@ -291,9 +294,12 @@
               rounded
               required
               :rules="emailRule"
+              class="ma-0 pa-0"
             />
 
-            <h4>CONTRASEÑA</h4>
+            <h5 class="ma-0 pa-0">
+              CONTRASEÑA
+            </h5>
             <v-text-field
               v-model="passwordLogin"
               type="password"
@@ -304,55 +310,40 @@
               rounded
               required
               :rules="passwordRule"
+              class="ma-0 pa-0"
             />
           </v-form>
         </v-card-text>
 
-        <v-card-actions class="pa-0 ma-0 fontDisplay" align="center" justify="center">
-          <v-col cols="12" class="pb-8">
-            <v-btn
-              color="#8C6E39"
-              class="white--text"
-              width="122px"
-              rounded
-              @click="login()"
-            >
-              LOGIN
-            </v-btn>
-
+        <v-card-actions class="pa-0 ma-0 px-10 fontDisplay" align="center" justify="center">
+          <v-col cols="5" class="ma-0 pa-0  mb-5">
             <v-btn
               class="black--text"
-              width="122px"
+              width="100%"
               text
+              rounded
               @click="limpiarTodo"
             >
               CANCELAR
             </v-btn>
           </v-col>
+
+          <v-col cols="2" class="ma-0 pa-0" />
+
+          <v-col cols="5" class="ma-0 pa-0  mb-5">
+            <v-btn
+              color="#8C6E39"
+              class="white--text"
+              width="100%"
+              rounded
+              @click="login()"
+            >
+              LOGIN
+            </v-btn>
+          </v-col>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-footer
-      padless
-      relative
-    >
-      <v-card class="flex" flat tile>
-        <v-card-title class="blueBack">
-          <v-spacer />
-          <v-btn v-for="icon in icons" :key="icon" class="mx-4" dark icon>
-            <v-icon size="24px">
-              {{ icon }}
-            </v-icon>
-          </v-btn>
-          <v-spacer />
-        </v-card-title>
-
-        <v-card-text class="py-2 white--text text-center coyoteBack">
-          {{ new Date().getFullYear() }} — <strong>&COPY; BUS BEE</strong>
-        </v-card-text>
-      </v-card>
-    </v-footer>
   </v-app>
 </template>
 
@@ -438,13 +429,6 @@ export default {
       phoneRule: [
         v => !!v || 'EL TELÉFONO ES REQUERIDO',
         v => /^\d{10}$/.test(v) || 'EL TELÉFONO DEBE DE TENER 10 CARACTERES'
-      ],
-
-      // VARIABLES DE FOOTER
-      icons: [
-        'mdi-facebook',
-        'mdi-twitter',
-        'mdi-instagram'
       ]
     }
   },

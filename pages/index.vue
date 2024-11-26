@@ -1,11 +1,11 @@
 <template>
-  <v-row>
-    <v-img
-      :src="require('@/assets/fondo-index.jpg')"
-    >
-      <v-col cols="12" align="center" justify="center">
-        <ui-alert v-if="showAlert" class="alerta" />
+  <v-row class="ma-0 pa-0" style="background-color: aliceblue !important;">
+    <v-col cols="12" align="center" justify="center" class="pa-0 ma-0">
+      <ui-alert v-if="showAlert" class="alerta" />
+
+      <v-row class="ma-0 pa-0 py-10 justify-center align-center">
         <v-stepper
+          ref="stepper"
           v-model="e6"
           max-width="500"
           align="center"
@@ -13,6 +13,8 @@
           vertical
           tile
           elevation="0"
+          style="border-radius: 30px !important;"
+          @change="scrollToStep"
         >
           <!-- STEP 1 -->
           <v-stepper-step
@@ -21,127 +23,159 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">BUSCA TU VIAJE</strong>
-            <small class="white--text">¿A DONDE IRÁS?</small>
+            <small class="white--text">¿A dónde irás?</small>
           </v-stepper-step>
 
-          <v-stepper-content step="1">
-            <v-card rounded flat class="pa-0">
-              <v-card-title class="blueBack">
-                <v-row>
-                  <v-col cols="12" class="text-center mb-2">
-                    <strong class="white--text fontTitle" style="font-size: 25px;">
-                      BIENVENIDO
-                    </strong>
-                  </v-col>
-                </v-row>
-              </v-card-title>
+          <v-stepper-content step="1" class="px-8 ma-0">
+            <v-card class="pa-0 ma-0 mt-5 mb-2" elevation="0">
+              <v-card class="pa-3 ma-0 blueBack" style="border-radius: 30px;">
+                <v-card-title class="ma-0 pa-0 white--text">
+                  <v-row class="ma-0 pa-0 text-center fontTitle" justify="center" style="font-size: 20px;">
+                    BIENVENIDO
+                  </v-row>
+                </v-card-title>
 
-              <v-card-subtitle class="text-center white--text blueBack fontDisplay">
-                ¿A donde viajaremos hoy?
-              </v-card-subtitle>
+                <v-card-subtitle class="pa-0 ma-0 white--text">
+                  <v-row class="ma-0 pa-0 fontDisplay" justify="center">
+                    ¿A dónde viajaremos hoy?
+                  </v-row>
+                </v-card-subtitle>
+              </v-card>
 
-              <v-card-text>
+              <v-card-text class="ma-0 pa-0 mt-7" style="box-shadow: none !important;">
                 <v-form
                   ref="formViaje"
                   v-model="validViaje"
-                  class="text-center black--text fontDisplay"
+                  class="text-center black--text fontDisplay ma-0 pa-0"
                   lazy-validation
                   @submit.prevent="submit"
                 >
-                  <v-row>
-                    <v-col cols="12" class="text-center mt-4" align="center" justify="center">
+                  <v-row class="ma-0 pa-0">
+                    <v-col cols="5" class="ma-0 pa-0">
                       <v-btn
+                        style="margin: none !important; padding-inline: 10px;"
                         :color="tipoViaje === 'sencillo' ? '#8C6E39' : '#FFFFFF'"
-                        :class="tipoViaje === 'sencillo' ? 'white--text ma-2' : 'black--text ma-2'"
+                        :class="tipoViaje === 'sencillo' ? 'white--text' : 'black--text'"
                         :outlined="tipoViaje === 'sencillo' ? false : true"
-                        width="157px"
                         elevation="0"
+                        width="100%"
                         rounded
                         @click="tipoViaje = 'sencillo'"
                       >
-                        <v-icon>mdi-keyboard-tab</v-icon>
-                        <span>&nbsp;SENCILLO</span>
+                        <v-row class="ma-0 pa-0" align="center" justify="center">
+                          <v-icon class="ma-0 pa-0">
+                            mdi-keyboard-tab
+                          </v-icon>
+                          <span class="ma-0 pa-0">&nbsp;SENCILLO</span>
+                        </v-row>
                       </v-btn>
+                    </v-col>
 
+                    <v-col cols="2" class="ma-0 pa-0" />
+
+                    <v-col cols="5" class="ma-0 pa-0">
                       <v-btn
                         :color="tipoViaje === 'redondo' ? '#8C6E39' : '#FFFFFF'"
-                        :class="tipoViaje === 'redondo' ? 'white--text ma-2' : 'black--text ma-2'"
+                        :class="tipoViaje === 'redondo' ? 'white--text' : 'black--text'"
                         :outlined="tipoViaje === 'redondo' ? false : true"
-                        width="157px"
                         elevation="0"
                         rounded
+                        width="100%"
+                        class="ma-0 pa-0"
                         @click="tipoViaje = 'redondo'"
                       >
-                        <v-icon>mdi-autorenew</v-icon>
-                        <span>&nbsp;REDONDO</span>
+                        <v-row class="ma-0 pa-0" align="center" justify="center">
+                          <v-icon class="ma-0 pa-0">
+                            mdi-autorenew
+                          </v-icon>
+                          <span class="ma-0 pa-0">&nbsp;REDONDO</span>
+                        </v-row>
                       </v-btn>
                     </v-col>
                   </v-row>
 
-                  <v-row class="text-center" align="center" justify="center">
-                    <v-col cols="12">
-                      <h4>ORIGEN</h4>
-                      <v-combobox
-                        v-model="origenViaje"
-                        :items="itemsStep1"
-                        hide-selected
-                        solo
-                        flat
-                        dense
-                        outlined
-                        rounded
-                        required
-                        :rules="origenRule"
-                      />
-                      <h4>DESTINO</h4>
-                      <v-combobox
-                        v-model="destinoViaje"
-                        :items="itemsStep1"
-                        hide-selected
-                        solo
-                        flat
-                        dense
-                        outlined
-                        rounded
-                        required
-                        :rules="destinoRule"
-                      />
-                      <h4>FECHA DE SALIDA</h4>
-                      <v-text-field
-                        ref="fechaSalida"
-                        v-model="fechaSalidaViaje"
-                        type="date"
-                        solo
-                        flat
-                        dense
-                        rounded
-                        required
-                        :min="today()"
-                        :rules="requiredRule"
-                        @focus="validateField('fechaSalida')"
-                        @blur="validateField('fechaSalida')"
-                      />
+                  <v-row class="ma-0 pa-0 mt-7 text-center" align="center" justify="center">
+                    <v-col cols="12" class="ma-0 pa-0">
+                      <v-row class="ma-0 pa-0">
+                        <v-col class="ma-0 pa-0">
+                          <h4>Origen</h4>
+
+                          <v-combobox
+                            v-model="origenViaje"
+                            :items="itemsStep1"
+                            hide-selected
+                            solo
+                            flat
+                            placeholder="Selecciona la ciudad de origen"
+                            dense
+                            outlined
+                            rounded
+                            required
+                            :rules="origenRule"
+                          />
+                        </v-col>
+                      </v-row>
+
+                      <v-row class="ma-0 pa-0">
+                        <v-col class="ma-0 pa-0">
+                          <h4>Destino</h4>
+
+                          <v-combobox
+                            v-model="destinoViaje"
+                            :items="itemsStep1"
+                            hide-selected
+                            solo
+                            flat
+                            placeholder="Selecciona la ciudad de destino"
+                            dense
+                            outlined
+                            rounded
+                            required
+                            :rules="destinoRule"
+                          />
+                          <h4>Fecha de Salida</h4>
+
+                          <v-text-field
+                            ref="fechaSalida"
+                            v-model="fechaSalidaViaje"
+                            type="date"
+                            class="ma-0 pa-0"
+                            rounded
+                            dense
+                            required
+                            outlined
+                            prepend-inner-icon="mdi-calendar"
+                            :min="today()"
+                            :rules="requiredRule"
+                            @focus="validateField('fechaSalida')"
+                            @blur="validateField('fechaSalida')"
+                          />
+                        </v-col>
+                      </v-row>
+
                       <h4 v-if="tipoViaje === 'redondo'">
-                        FECHA DE REGRESO
+                        Fecha de Regreso
                       </h4>
                       <v-text-field
                         v-if="tipoViaje === 'redondo'"
                         ref="fechaRegreso"
                         v-model="fechaRegresoViaje"
                         type="date"
-                        solo
-                        flat
-                        dense
                         rounded
+                        dense
                         required
+                        outlined
+                        prepend-inner-icon="mdi-calendar"
                         :min="today()"
                         :rules="fechaRegresoRule"
                         @focus="validateField('fechaRegreso')"
                         @blur="validateField('fechaRegreso')"
                       />
-                      <h4>PASAJEROS</h4>
+
+                      <h4>Pasajeros</h4>
                       <v-text-field
                         v-model="pasajerosViaje"
                         type="number"
@@ -153,13 +187,14 @@
                         required
                         min="1"
                         max="4"
-                        :rules="requiredRule"
+                        :rules="pasajerosRule"
                       />
                     </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
             </v-card>
+
             <v-btn
               color="#8C6E39"
               class="white--text mb-4 fontTitle"
@@ -179,56 +214,45 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">SELECCIONA TU VIAJE DE IDA</strong>
-            <small class="white--text">¿CUAL HORARIO ES TU MEJOR OPCIÓN?</small>
+            <small class="white--text">¿Cuál horario es tu mejor opción?</small>
           </v-stepper-step>
 
-          <v-stepper-content
-            step="2"
-            class="fontDisplay"
-          >
-            <small><strong>{{ fechaFormateada(fechaSalidaViaje) }}</strong></small>
-            <v-row align="center" justify="center" class="ma-2">
-              <v-col cols="5" class="fontTitle">
+          <v-stepper-content step="2" class="fontDisplay px-8 ma-0">
+            <small class="ma-0 pa-0 mt-5"><strong>{{ fechaFormateada(fechaSalidaViaje) }}</strong></small>
+            <v-row align="center" justify="center" class="pa-3 ma-0 mt-5">
+              <v-col cols="5" class="fontTitle pa-0 ma-0">
                 <h3>
                   {{ origenViaje }}
                 </h3>
               </v-col>
 
-              <v-col cols="2" class="fontTitle">
+              <v-col cols="2" class="fontTitle pa-0 ma-0">
                 <v-icon large color="#8C6E39">
                   mdi-bus-articulated-front
                 </v-icon>
               </v-col>
 
-              <v-col cols="5" class="fontTitle">
+              <v-col cols="5" class="fontTitle pa-0 ma-0">
                 <h3>
                   {{ destinoViaje }}
                 </h3>
               </v-col>
             </v-row>
 
-            <v-row>
-              <v-col
-                v-for="r in routes"
-                :key="r.routeId"
-                cols="12"
-              >
-                <v-card
-                  class="tour-card white--text mb-4"
-                  rounded
-                  outlined
-                  flat
-                >
-                  <v-card-title class="headline text-center blueBack fontTitle">
-                    <v-row>
-                      <v-col cols="6" class="fontTitle">
-                        <small>SALIDA:</small>
+            <v-row class="ma-0 pa-0 my-4">
+              <v-col v-for="r in routes" :key="r.routeId" class="ma-0 pa-0" cols="12">
+                <v-card class="pa-0 ma-0 white--text mb-4" style="border-radius: 30px;">
+                  <v-card-title class="ma-0 pa-0 py-3 headline text-center blueBack fontTitle">
+                    <v-row class="pa-0 ma-0">
+                      <v-col cols="6" class="fontTitle text-center pa-0 ma-0">
+                        <small>Salida:</small>
                         <h6>{{ getHour(r.departureTime) }}</h6>
                       </v-col>
-                      <v-col cols="6" class="fontTitle">
-                        <small>PRECIO:</small>
+                      <v-col cols="6" class="fontTitle text-center pa-0 ma-0">
+                        <small>Precio:</small>
                         <h6>${{ r.price }} c/u</h6>
                       </v-col>
                     </v-row>
@@ -236,42 +260,51 @@
 
                   <v-divider color="white" />
 
-                  <v-card-subtitle>
-                    <v-row class="text-start">
-                      <v-col cols="12">
-                        <span>LUGARES DISPONIBLES: {{ r.seats.available }} asientos</span>
+                  <v-card-subtitle class="ma-0 pa-0 py-5">
+                    <v-row class="text-center ma-0 pa-0">
+                      <v-col class="ma-0 pa-0" cols="12" style="font-size: 15px">
+                        <span>Asientos Disponibles: {{ r.seats.available }} asientos</span>
                         <br>
-                        <span>DURACIÓN: {{ getDuration(r.departureTime, r.arrivalTime) }}</span>
+                        <span>Duración: {{ getDuration(r.departureTime, r.arrivalTime) }}</span>
                       </v-col>
                     </v-row>
                   </v-card-subtitle>
 
-                  <v-card-actions class="d-flex justify-end">
-                    <v-btn
-                      color="#8C6E39"
-                      class="black--text mb-3 fontTitle"
-                      rounded
-                      text
-                      @click="moreInfo(r)"
-                    >
-                      MAS INFO
-                    </v-btn>
-                    <v-btn
-                      color="#8C6E39"
-                      class="white--text mb-3 fontTitle"
-                      rounded
-                      @click="selectTravel(r)"
-                    >
-                      SELECCIONAR
-                    </v-btn>
+                  <v-card-actions class="d-flex ma-0 pa-5">
+                    <v-col cols="5" class="ma-0 pa-0">
+                      <v-btn
+                        color="#8C6E39"
+                        class="black--text mb-3 fontTitle"
+                        rounded
+                        text
+                        width="100%"
+                        @click="moreInfo(r)"
+                      >
+                        MAS INFO
+                      </v-btn>
+                    </v-col>
+
+                    <v-col cols="2" class="ma-0 pa-0" />
+
+                    <v-col cols="5" class="ma-0 pa-0">
+                      <v-btn
+                        color="#8C6E39"
+                        class="white--text mb-3 fontTitle"
+                        rounded
+                        width="100%"
+                        @click="selectTravel(r)"
+                      >
+                        SELECCIONAR
+                      </v-btn>
+                    </v-col>
                   </v-card-actions>
                 </v-card>
               </v-col>
             </v-row>
 
             <v-btn
-              color="#8C6E39"
-              class="white--text mb-4 fontTitle"
+              color="transparent"
+              class="mb-4 fontTitle"
               elevation="0"
               width="122px"
               rounded
@@ -281,7 +314,7 @@
             </v-btn>
 
             <v-dialog v-model="showMasInfo" max-width="400">
-              <v-card class="fontDisplay">
+              <v-card class="fontDisplay" style="border-radius: 30px !important;">
                 <v-img
                   :src="require('@/assets/back-more-info.svg')"
                 >
@@ -298,7 +331,7 @@
                     <v-spacer />
 
                     <v-btn
-                      color="#0A263D"
+                      color="transparent"
                       elevation="0"
                       style="max-width: 36px !important; width: 36px !important;"
                       @click="showMasInfo=false"
@@ -310,7 +343,7 @@
                   </v-app-bar>
                 </v-img>
 
-                <v-card-text>
+                <v-card-text class="ma-0 pa-0 py-5">
                   <div class="font-weight-bold my-5 ml-9 mb-2">
                     <v-icon color="#8C6E39">
                       mdi-triangle-down-outline
@@ -352,312 +385,298 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">ELIGE TUS ASIENTOS DE IDA</strong>
-            <small class="white--text">¿CUAL ES TU ASIENTO MAS COMODO?</small>
+            <small class="white--text">¿Cuál asiento es más cómo para ti?</small>
           </v-stepper-step>
 
-          <v-stepper-content step="3">
+          <v-stepper-content step="3" class="px-8 ma-0">
             <v-card elevation="0" class="mb-5">
-              <v-row class="fontTitle">
+              <v-row class="fontTitle ma-0 pa-0 mt-3">
                 <v-col cols="12">
-                  <h1>ADELANTE</h1>
+                  <h1>Frontal</h1>
                 </v-col>
               </v-row>
 
-              <v-row class="fontDisplay" align="center" justify="center" style="max-width: 160px;">
-                <v-col cols="3">
-                  <v-btn
-                    class="white--text blueBack mb-2"
-                    elevation="0"
-                    rounded
-                    icon
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+              <v-row class="fontDisplay ma-0 pa-0 my-6" align="center" justify="center">
+                <v-card class="ma-0 pa-0 px-1 py-4" width="45%" height="100%" style="border-radius: 30px!important; border: black 1px solid">
+                  <v-row class="ma-0 pa-0">
+                    <!-- Renglón 1 -->
+                    <v-col cols="12" class="ma-0 pa-0">
+                      <v-row class="ma-0 pa-0">
+                        <v-col cols="5" class="ma-0 pa-0 d-flex justify-center">
+                          <v-icon class="ma-0 pa-0" style="background-color: transparent !important; color: #0A263D; border: none !important;">
+                            mdi-steering
+                          </v-icon>
+                        </v-col>
+                      </v-row>
+                    </v-col>
 
-                  <v-btn
-                    :class="seats[1].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[1])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(1)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                    <v-col cols="12" class="ma-0 pa-0">
+                      <v-row class="ma-0 pa-0">
+                        <v-col cols="5" class="ma-0 pa-0 d-flex justify-center">
+                          <v-btn
+                            class="blueBack white--text mt-0 pt-0"
+                            elevation="0"
+                            outlined
+                            rounded
+                            icon
+                          >
+                            <v-icon>mdi-seat</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-col>
 
-                  <v-btn
-                    :class="seats[4].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[4])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(4)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                    <!-- Renglón 1 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seats[0].selected ? 'coyoteBack white--text' : getSeatClass(seats[0])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(1)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seats[7].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[7])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(7)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seats[1].selected ? 'coyoteBack white--text' : getSeatClass(seats[1])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(2)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seats[10].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[10])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(10)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-spacer />
 
-                  <v-btn
-                    :class="seats[13].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[13])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(13)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-                </v-col>
+                      <v-btn
+                        :class="seats[2].selected ? 'coyoteBack white--text' : getSeatClass(seats[2])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(3)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                <v-col cols="3">
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-btn
+                        :class="seats[3].selected ? 'coyoteBack white--text' : getSeatClass(seats[3])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(4)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
 
-                  <v-btn
-                    :class="seats[2].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[2])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(2)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                    <!-- Renglón 2 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seats[4].selected ? 'coyoteBack white--text' : getSeatClass(seats[4])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(5)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seats[5].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[5])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(5)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seats[5].selected ? 'coyoteBack white--text' : getSeatClass(seats[5])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(6)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seats[8].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[8])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(8)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-spacer />
 
-                  <v-btn
-                    :class="seats[11].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[11])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(11)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seats[6].selected ? 'coyoteBack white--text' : getSeatClass(seats[6])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(7)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seats[14].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[14])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(14)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-                </v-col>
+                      <v-btn
+                        :class="seats[7].selected ? 'coyoteBack white--text' : getSeatClass(seats[7])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(8)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
 
-                <v-col cols="3">
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                    <!-- Renglón 3 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seats[8].selected ? 'coyoteBack white--text' : getSeatClass(seats[8])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(9)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seats[3].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[3])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(3)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seats[9].selected ? 'coyoteBack white--text' : getSeatClass(seats[9])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(10)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-spacer />
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-btn
+                        :class="seats[10].selected ? 'coyoteBack white--text' : getSeatClass(seats[10])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(11)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-btn
+                        :class="seats[11].selected ? 'coyoteBack white--text' : getSeatClass(seats[11])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(12)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
 
-                  <v-btn
-                    :class="seats[15].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[15])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(15)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-                </v-col>
+                    <!-- Renglón 4 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seats[12].selected ? 'coyoteBack white--text' : getSeatClass(seats[12])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(13)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                <v-col cols="3">
-                  <v-btn
-                    :class="seats[0].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[0])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(0)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seats[13].selected ? 'coyoteBack white--text' : getSeatClass(seats[13])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(14)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-spacer />
 
-                  <v-btn
-                    :class="seats[6].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[6])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(6)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seats[14].selected ? 'coyoteBack white--text' : getSeatClass(seats[14])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(15)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seats[9].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[9])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(9)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seats[15].selected ? 'coyoteBack white--text' : getSeatClass(seats[15])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(16)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-row>
 
-                  <v-btn
-                    :class="seats[12].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[12])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(12)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-
-                  <v-btn
-                    :class="seats[16].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seats[16])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(16)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+              <v-row class="fontTitle ma-0 pa-0">
+                <v-col cols="12">
+                  <h1>Posterior</h1>
                 </v-col>
               </v-row>
 
-              <v-row class="fontTitle">
-                <v-col cols="12">
-                  <h1>ATRÁS</h1>
-                </v-col>
-              </v-row>
+              <v-divider class="ma-3 pa-0" />
 
-              <v-divider inset />
-
-              <v-row align="center" justify="center" style="max-width: 300px;">
-                <v-col cols="12">
-                  <v-list>
-                    <v-list-item-group small class="fontDisplay">
-                      <v-list-item
+              <v-row class="ma-0 pa-0" align="center" justify="center" style="max-width: 300px;">
+                <v-col cols="12" class="ma-0 pa-0">
+                  <v-list class="ma-0 pa-0">
+                    <v-list-item-group small class="ma-0 pa-0">
+                      <v-row
                         v-for="(item, i) in itemsInfoStep3"
                         :key="i"
+                        class="ma-0 pa-0 my-2 align-center justify-center"
                       >
-                        <v-list-item-icon>
-                          <v-icon :color="item.color">
+                        <v-list-item-icon class="ma-0 mx-2 px-0  align-center justify-center">
+                          <v-icon :color="item.color" class="mx-0 px-0  align-center justify-center">
                             {{ item.icon }}
                           </v-icon>
                         </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title class="text-start black--text">
-                            {{ item.text }}
-                          </v-list-item-title>
-                        </v-list-item-content>
-                      </v-list-item>
+
+                        <small class="text-center black--text ma-0 pa-0">
+                          {{ item.text }}
+                        </small>
+                      </v-row>
                     </v-list-item-group>
                   </v-list>
                 </v-col>
               </v-row>
 
-              <v-row align="center" justify="center" class="fontDisplay" style="max-width: 300px;">
+              <v-row v-if="selectedSeats.length > 0" align="center" justify="center" class="fontDisplay" style="max-width: 300px;">
                 <v-col
                   cols="12"
                 >
@@ -673,26 +692,36 @@
               </v-row>
             </v-card>
 
-            <v-btn
-              color="#8C6E39"
-              class="black--text mb-4 fontTitle"
-              elevation="0"
-              rounded
-              text
-              @click="e6 = 2"
-            >
-              ATRÁS
-            </v-btn>
-            <v-btn
-              color="#8C6E39"
-              class="white--text mb-4 fontTitle"
-              elevation="0"
-              width="122px"
-              rounded
-              @click="validarAsientos()"
-            >
-              CONTINUAR
-            </v-btn>
+            <v-row class="ma-0 pa-0 mt-3 mx-3">
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  width="100%"
+                  class="black--text mb-4 fontTitle"
+                  elevation="0"
+                  rounded
+                  text
+                  @click="e6 = 2"
+                >
+                  ATRÁS
+                </v-btn>
+              </v-col>
+
+              <v-col cols="2" class="ma-0 pa-0" />
+
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="white--text mb-4 fontTitle"
+                  elevation="0"
+                  width="100%"
+                  rounded
+                  @click="validarAsientos()"
+                >
+                  CONTINUAR
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-stepper-content>
 
           <!-- STEP 4 -->
@@ -702,29 +731,31 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">EQUIPAJE EXTRA DE IDA</strong>
-            <small class="white--text">¿LLEVARAS EQUIPAJE EXTRA?</small>
+            <small class="white--text">¿Llevarás equipaje extra?</small>
           </v-stepper-step>
 
-          <v-stepper-content step="4">
-            <v-card elevation="0" class="mb-5 fontDisplay">
-              <v-card-text rounded class="white--text text-start" style="background-color: #B71C1C;">
-                <strong>REGLAS DEL EQUIPAJE EXTRA:</strong>
+          <v-stepper-content step="4" class="px-8 ma-0">
+            <v-card elevation="0" class="ma-0 pa-0 mb-5 fontDisplay">
+              <v-card-text class="ma-0 pa-3 py-5 white--text" style="background-color: #B71C1C; border-radius: 30px; font-size: 15px">
+                <strong class="text-center">REGLAS DEL EQUIPAJE EXTRA</strong>
+                <br><br>
+                <small class="text-justify">• Cada pasajero podrá llevar una mochila de tamaño escolar y una maleta que no exceda las siguientes medidas: 60x42x33.</small>
                 <br>
-                <small>CADA PASAJERO PODRÁ LLEVAR UNA MOCHILA DE TAMAÑO ESCOLAR Y UNA MALETA QUE NO EXCEDA LAS SIGUIENTES MEDIDAS: 60x42x33.</small>
+                <small class="text-justify">• En caso de exceder estas dimensiones es necesario reportarlo en este apartado.</small>
                 <br>
-                <small>EN CASO DE EXCEDER ESTAS DIMENSIONES ES NECESARIO REPORTARLO EN ESTE APARTADO.</small>
-                <br>
-                <small>EL COSTO POR EXCESO DE EQUIPAJE ES DE $100 POR PASAJERO Y ESTA LIMITADO A UNA MALETA DE LAS SIGUIENTES MEDIDAS: 70x46x35.</small>
+                <small class="text-justify">• El costo por exceso de equipaje es de $100 por pasajero y está limitado a una maleta de las siguientes medidas: 70x46x35.</small>
               </v-card-text>
 
-              <v-card-text>
-                <h4>¿CUANTOS PASAJEROS LLEVARAN EQUIPAJE EXTRA?</h4>
+              <v-card-text class="ma-0 pa-0 mt-10">
+                <h4>¿Cuántos pasajeros llevarán equipaje extra?</h4>
+
                 <v-form
                   ref="formEquipaje"
                   v-model="validEquipaje"
-                  class="text-center black--text fontDisplay"
+                  class="text-center black--text fontDisplay mt-3"
                   lazy-validation
                   @submit.prevent="submit"
                 >
@@ -745,29 +776,39 @@
               </v-card-text>
             </v-card>
 
-            <v-btn
-              color="#8C6E39"
-              class="black--text mb-4 fontTitle"
-              elevation="0"
-              rounded
-              text
-              @click="e6 = 3"
-            >
-              ATRÁS
-            </v-btn>
-            <v-btn
-              color="#8C6E39"
-              class="white--text mb-4 fontTitle"
-              elevation="0"
-              width="122px"
-              rounded
-              @click="validarEquipaje()"
-            >
-              CONTINUAR
-            </v-btn>
+            <v-row class="ma-0 pa-0">
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="black--text mb-4 fontTitle"
+                  elevation="0"
+                  rounded
+                  width="100%"
+                  text
+                  @click="e6 = 3"
+                >
+                  ATRÁS
+                </v-btn>
+              </v-col>
+
+              <v-col cols="2" class="ma-0 pa-0" />
+
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="white--text mb-4 fontTitle"
+                  elevation="0"
+                  width="100%"
+                  rounded
+                  @click="validarEquipaje()"
+                >
+                  CONTINUAR
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-stepper-content>
 
-          <!-- STEP VIAJE REDONDO -->
+          <!-- STEP 5 VIAJE REDONDO -->
           <v-stepper-step
             v-if="tipoViaje === 'redondo'"
             :complete="e6 > 5"
@@ -775,57 +816,45 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">SELECCIONA TU VIAJE DE REGRESO</strong>
-            <small class="white--text">¿CUAL HORARIO ES TU MEJOR OPCIÓN?</small>
+            <small class="white--text">¿Cuál horario es tu mejor opción?</small>
           </v-stepper-step>
 
-          <v-stepper-content
-            v-if="tipoViaje === 'redondo'"
-            step="5"
-            class="fontDisplay"
-          >
+          <v-stepper-content v-if="tipoViaje === 'redondo'" step="5" class="fontDisplay px-8 ma-0">
             <small><strong>{{ fechaFormateada(fechaRegresoViaje) }}</strong></small>
-            <v-row align="center" justify="center" class="ma-2">
-              <v-col cols="5" class="fontTitle">
+            <v-row align="center" justify="center" class="pa-3 ma-0 mt-5">
+              <v-col cols="5" class="fontTitle pa-0 ma-0">
                 <h3>
                   {{ destinoViaje }}
                 </h3>
               </v-col>
 
-              <v-col cols="2" class="fontTitle">
+              <v-col cols="2" class="fontTitle pa-0 ma-0">
                 <v-icon large color="#8C6E39">
                   mdi-bus-articulated-front
                 </v-icon>
               </v-col>
 
-              <v-col cols="5" class="fontTitle">
+              <v-col cols="5" class="fontTitle pa-0 ma-0">
                 <h3>
                   {{ origenViaje }}
                 </h3>
               </v-col>
             </v-row>
 
-            <v-row>
-              <v-col
-                v-for="r in routesRegreso"
-                :key="r.routeId"
-                cols="12"
-              >
-                <v-card
-                  class="tour-card white--text mb-4"
-                  rounded
-                  outlined
-                  flat
-                >
-                  <v-card-title class="headline text-center blueBack fontTitle">
-                    <v-row>
-                      <v-col cols="6" class="fontTitle">
-                        <small>SALIDA:</small>
+            <v-row class="ma-0 pa-0 my-4">
+              <v-col v-for="r in routesRegreso" :key="r.routeId" class="ma-0 pa-0" cols="12">
+                <v-card class="pa-0 ma-0 white--text mb-4" style="border-radius: 30px;">
+                  <v-card-title class="pa-0 ma-0 py-3 headline text-center blueBack fontTitle">
+                    <v-row class="pa-0 ma-0">
+                      <v-col cols="6" class="pa-0 ma-0 fontTitle text-center">
+                        <small>Salida:</small>
                         <h6>{{ getHour(r.departureTime) }}</h6>
                       </v-col>
-                      <v-col cols="6" class="fontTitle">
-                        <small>PRECIO:</small>
+                      <v-col cols="6" class="pa-0 ma-0 fontTitle text-center">
+                        <small>Precio:</small>
                         <h6>${{ r.price }} c/u</h6>
                       </v-col>
                     </v-row>
@@ -833,42 +862,51 @@
 
                   <v-divider color="white" />
 
-                  <v-card-subtitle>
-                    <v-row class="text-start">
-                      <v-col cols="12">
-                        <span>LUGARES DISPONIBLES: {{ r.seats.available }} asientos</span>
+                  <v-card-subtitle class="ma-0 pa-0 py-5">
+                    <v-row class="ma-0 pa-0 text-center">
+                      <v-col class="ma-0 pa-0" cols="12" style="font-size: 15px">
+                        <span>Lugares disponibles: {{ r.seats.available }} asientos</span>
                         <br>
-                        <span>DURACIÓN: {{ getDuration(r.departureTime, r.arrivalTime) }}</span>
+                        <span>Duración: {{ getDuration(r.departureTime, r.arrivalTime) }}</span>
                       </v-col>
                     </v-row>
                   </v-card-subtitle>
 
-                  <v-card-actions class="d-flex justify-end">
-                    <v-btn
-                      color="#8C6E39"
-                      class="black--text mb-3 fontTitle"
-                      rounded
-                      text
-                      @click="moreInfo(r)"
-                    >
-                      MAS INFO
-                    </v-btn>
-                    <v-btn
-                      color="#8C6E39"
-                      class="white--text mb-3 fontTitle"
-                      rounded
-                      @click="selectTravel(r)"
-                    >
-                      SELECCIONAR
-                    </v-btn>
+                  <v-card-actions class="d-flex ma-0 pa-5">
+                    <v-col cols="5" class="ma-0 pa-0">
+                      <v-btn
+                        color="#8C6E39"
+                        class="black--text mb-3 fontTitle"
+                        rounded
+                        text
+                        width="100%"
+                        @click="moreInfo(r)"
+                      >
+                        MAS INFO
+                      </v-btn>
+                    </v-col>
+
+                    <v-col cols="2" class="ma-0 pa-0" />
+
+                    <v-col cols="5" class="ma-0 pa-0">
+                      <v-btn
+                        color="#8C6E39"
+                        class="white--text mb-3 fontTitle"
+                        rounded
+                        width="100%"
+                        @click="selectTravel(r)"
+                      >
+                        SELECCIONAR
+                      </v-btn>
+                    </v-col>
                   </v-card-actions>
                 </v-card>
               </v-col>
             </v-row>
 
             <v-btn
-              color="#8C6E39"
-              class="white--text mb-4 fontTitle"
+              color="transparent"
+              class="mb-4 fontTitle"
               elevation="0"
               width="122px"
               rounded
@@ -878,7 +916,7 @@
             </v-btn>
 
             <v-dialog v-model="showMasInfo" max-width="400">
-              <v-card class="fontDisplay">
+              <v-card class="fontDisplay" style="border-radius: 30px !important;">
                 <v-img
                   :src="require('@/assets/back-more-info.svg')"
                 >
@@ -895,7 +933,7 @@
                     <v-spacer />
 
                     <v-btn
-                      color="#0A263D"
+                      color="transparent"
                       elevation="0"
                       style="max-width: 36px !important; width: 36px !important;"
                       @click="showMasInfo=false"
@@ -907,7 +945,7 @@
                   </v-app-bar>
                 </v-img>
 
-                <v-card-text>
+                <v-card-text class="ma-0 pa-0 py-5">
                   <div class="font-weight-bold my-5 ml-9 mb-2">
                     <v-icon color="#8C6E39">
                       mdi-triangle-down-outline
@@ -942,7 +980,7 @@
             </v-dialog>
           </v-stepper-content>
 
-          <!-- STEP ASIENTOS REDONDO -->
+          <!-- STEP 6 ASIENTOS REDONDO -->
           <v-stepper-step
             v-if="tipoViaje === 'redondo'"
             :complete="e6 > 6"
@@ -950,316 +988,302 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">ELIGE TUS ASIENTOS DE REGRESO</strong>
-            <small class="white--text">¿CUAL ES TU ASIENTO MAS COMODO?</small>
+            <small class="white--text">¿Cuál asiento es más cómo para ti?</small>
           </v-stepper-step>
 
-          <v-stepper-content v-if="tipoViaje === 'redondo'" step="6">
+          <v-stepper-content v-if="tipoViaje === 'redondo'" step="6" class="px-8 ma-0">
             <v-card elevation="0" class="mb-5">
-              <v-row class="fontTitle">
+              <v-row class="fontTitle ma-0 pa-0 mt-3">
                 <v-col cols="12">
-                  <h1>ADELANTE</h1>
+                  <h1>Frontal</h1>
                 </v-col>
               </v-row>
 
-              <v-row class="fontDisplay" align="center" justify="center" style="max-width: 160px;">
-                <v-col cols="3">
-                  <v-btn
-                    class="white--text blueBack mb-2"
-                    elevation="0"
-                    rounded
-                    icon
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+              <v-row class="fontDisplay ma-0 pa-0 my-6" align="center" justify="center">
+                <v-card class="ma-0 pa-0 px-1 py-4" width="45%" height="100%" style="border-radius: 30px!important; border: black 1px solid">
+                  <v-row class="ma-0 pa-0">
+                    <!-- Renglón 1 -->
+                    <v-col cols="12" class="ma-0 pa-0">
+                      <v-row class="ma-0 pa-0">
+                        <v-col cols="5" class="ma-0 pa-0 d-flex justify-center">
+                          <v-icon class="ma-0 pa-0" style="background-color: transparent !important; color: #0A263D; border: none !important;">
+                            mdi-steering
+                          </v-icon>
+                        </v-col>
+                      </v-row>
+                    </v-col>
 
-                  <v-btn
-                    :class="seatsRegreso[1].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[1])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(1)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                    <v-col cols="12" class="ma-0 pa-0">
+                      <v-row class="ma-0 pa-0">
+                        <v-col cols="5" class="ma-0 pa-0 d-flex justify-center">
+                          <v-btn
+                            class="blueBack white--text mt-0 pt-0"
+                            elevation="0"
+                            outlined
+                            rounded
+                            icon
+                          >
+                            <v-icon>mdi-seat</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-col>
 
-                  <v-btn
-                    :class="seatsRegreso[4].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[4])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(4)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                    <!-- Renglón 1 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seatsRegreso[0].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[0])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(1)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seatsRegreso[7].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[7])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(7)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seatsRegreso[1].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[1])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(2)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seatsRegreso[10].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[10])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(10)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-spacer />
 
-                  <v-btn
-                    :class="seatsRegreso[13].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[13])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(13)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-                </v-col>
+                      <v-btn
+                        :class="seatsRegreso[2].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[2])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(3)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                <v-col cols="3">
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-btn
+                        :class="seatsRegreso[3].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[3])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(4)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
 
-                  <v-btn
-                    :class="seatsRegreso[2].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[2])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(2)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                    <!-- Renglón 2 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seatsRegreso[4].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[4])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(5)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seatsRegreso[5].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[5])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(5)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seatsRegreso[5].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[5])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(6)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seatsRegreso[8].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[8])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(8)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-spacer />
 
-                  <v-btn
-                    :class="seatsRegreso[11].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[11])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(11)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seatsRegreso[6].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[6])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(7)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seatsRegreso[14].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[14])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(14)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-                </v-col>
+                      <v-btn
+                        :class="seatsRegreso[7].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[7])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(8)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
 
-                <v-col cols="3">
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                    <!-- Renglón 3 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seatsRegreso[8].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[8])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(9)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seatsRegreso[3].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[3])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(3)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seatsRegreso[9].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[9])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(10)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-spacer />
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-btn
+                        :class="seatsRegreso[10].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[10])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(11)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-btn
+                        :class="seatsRegreso[11].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[11])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(12)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
 
-                  <v-btn
-                    :class="seatsRegreso[15].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[15])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(15)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-                </v-col>
+                    <!-- Renglón 4 -->
+                    <v-col cols="12" class="ma-0 pa-0 d-flex justify-center">
+                      <v-btn
+                        :class="seatsRegreso[12].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[12])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(13)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                <v-col cols="3">
-                  <v-btn
-                    :class="seatsRegreso[0].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[0])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(0)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seatsRegreso[13].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[13])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(14)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    color="#0A263D"
-                    class="white--text mb-2"
-                    elevation="0"
-                    disabled
-                    rounded
-                    icon
-                  />
+                      <v-spacer />
 
-                  <v-btn
-                    :class="seatsRegreso[6].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[6])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(6)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seatsRegreso[14].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[14])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(15)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
 
-                  <v-btn
-                    :class="seatsRegreso[9].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[9])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(9)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+                      <v-btn
+                        :class="seatsRegreso[15].selected ? 'coyoteBack white--text' : getSeatClass(seatsRegreso[15])"
+                        elevation="0"
+                        style="margin: 5px 2px;"
+                        outlined
+                        rounded
+                        icon
+                        @click="toggleSeat(16)"
+                      >
+                        <v-icon>mdi-seat</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-row>
 
-                  <v-btn
-                    :class="seatsRegreso[12].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[12])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(12)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
-
-                  <v-btn
-                    :class="seatsRegreso[16].selected ? 'coyoteBack white--text mb-2' : getSeatClass(seatsRegreso[16])"
-                    elevation="0"
-                    outlined
-                    rounded
-                    icon
-                    @click="toggleSeat(16)"
-                  >
-                    <v-icon>mdi-seat</v-icon>
-                  </v-btn>
+              <v-row class="fontTitle ma-0 pa-0">
+                <v-col cols="12">
+                  <h1>Posterior</h1>
                 </v-col>
               </v-row>
 
-              <v-row class="fontTitle">
-                <v-col cols="12">
-                  <h1>ATRÁS</h1>
-                </v-col>
-              </v-row>
+              <v-divider class="ma-3 pa-0" />
 
-              <v-divider inset />
-
-              <v-row align="center" justify="center" style="max-width: 300px;">
-                <v-col cols="12">
-                  <v-list>
-                    <v-list-item-group small class="fontDisplay">
-                      <v-list-item
+              <v-row class="ma-0 pa-0" align="center" justify="center" style="max-width: 300px;">
+                <v-col cols="12" class="ma-0 pa-0">
+                  <v-list class="ma-0 pa-0">
+                    <v-list-item-group small class="ma-0 pa-0">
+                      <v-row
                         v-for="(item, i) in itemsInfoStep3"
                         :key="i"
+                        class="ma-0 pa-0 my-2 align-center justify-center"
                       >
-                        <v-list-item-icon>
-                          <v-icon :color="item.color">
+                        <v-list-item-icon class="ma-0 mx-2 px-0  align-center justify-center">
+                          <v-icon :color="item.color" class="mx-0 px-0  align-center justify-center">
                             {{ item.icon }}
                           </v-icon>
                         </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title class="text-start black--text">
-                            {{ item.text }}
-                          </v-list-item-title>
-                        </v-list-item-content>
-                      </v-list-item>
+
+                        <small class="text-center black--text ma-0 pa-0">
+                          {{ item.text }}
+                        </small>
+                      </v-row>
                     </v-list-item-group>
                   </v-list>
                 </v-col>
               </v-row>
 
-              <v-row align="center" justify="center" class="fontDisplay" style="max-width: 300px;">
+              <v-row v-if="selectedSeatsRegreso.length > 0" align="center" justify="center" class="fontDisplay" style="max-width: 300px;">
                 <v-col
                   cols="12"
                 >
-                  <small>ASIENTOS SELECCIONADOS:</small>
+                  <small>Asientos seleccionados:</small>
                   <br>
                   <small
                     v-for="(item, i) in selectedSeatsRegreso"
@@ -1271,26 +1295,36 @@
               </v-row>
             </v-card>
 
-            <v-btn
-              color="#8C6E39"
-              class="black--text mb-4 fontTitle"
-              elevation="0"
-              rounded
-              text
-              @click="e6 = 5"
-            >
-              ATRÁS
-            </v-btn>
-            <v-btn
-              color="#8C6E39"
-              class="white--text mb-4 fontTitle"
-              elevation="0"
-              width="122px"
-              rounded
-              @click="validarAsientos()"
-            >
-              CONTINUAR
-            </v-btn>
+            <v-row class="ma-0 pa-0 mt-3 mx-3">
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  width="100%"
+                  class="black--text mb-4 fontTitle"
+                  elevation="0"
+                  rounded
+                  text
+                  @click="e6 = 5"
+                >
+                  ATRÁS
+                </v-btn>
+              </v-col>
+
+              <v-col cols="2" class="ma-0 pa-0" />
+
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="white--text mb-4 fontTitle"
+                  elevation="0"
+                  width="100%"
+                  rounded
+                  @click="validarAsientos()"
+                >
+                  CONTINUAR
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-stepper-content>
 
           <!-- STEP EQUIPAJE REDONDO -->
@@ -1301,29 +1335,31 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">EQUIPAJE EXTRA DE IDA</strong>
-            <small class="white--text">¿LLEVARAS EQUIPAJE EXTRA?</small>
+            <small class="white--text">¿Llevarás equipaje extra?</small>
           </v-stepper-step>
 
-          <v-stepper-content v-if="tipoViaje === 'redondo'" step="7">
-            <v-card elevation="0" class="mb-5 fontDisplay">
-              <v-card-text rounded class="white--text text-start" style="background-color: #B71C1C;">
-                <strong>REGLAS DEL EQUIPAJE EXTRA:</strong>
+          <v-stepper-content v-if="tipoViaje === 'redondo'" step="7" class="px-8 ma-0">
+            <v-card elevation="0" class="ma-0 pa-0 mb-5 fontDisplay">
+              <v-card-text class="ma-0 pa-3 py-5 white--text" style="background-color: #B71C1C; border-radius: 30px; font-size: 15px">
+                <strong class="text-center">REGLAS DEL EQUIPAJE EXTRA</strong>
+                <br><br>
+                <small class="text-justify">• Cada pasajero podrá llevar una mochila de tamaño escolar y una maleta que no exceda las siguientes medidas: 60x42x33.</small>
                 <br>
-                <small>CADA PASAJERO PODRÁ LLEVAR UNA MOCHILA DE TAMAÑO ESCOLAR Y UNA MALETA QUE NO EXCEDA LAS SIGUIENTES MEDIDAS: 60x42x33.</small>
+                <small class="text-justify">• En caso de exceder estas dimensiones es necesario reportarlo en este apartado.</small>
                 <br>
-                <small>EN CASO DE EXCEDER ESTAS DIMENSIONES ES NECESARIO REPORTARLO EN ESTE APARTADO.</small>
-                <br>
-                <small>EL COSTO POR EXCESO DE EQUIPAJE ES DE $100 POR PASAJERO Y ESTA LIMITADO A UNA MALETA DE LAS SIGUIENTES MEDIDAS: 70x46x35.</small>
+                <small class="text-justify">• El costo por exceso de equipaje es de $100 por pasajero y está limitado a una maleta de las siguientes medidas: 70x46x35.</small>
               </v-card-text>
 
-              <v-card-text>
-                <h4>¿CUANTOS PASAJEROS LLEVARAN EQUIPAJE EXTRA?</h4>
+              <v-card-text class="ma-0 pa-0 mt-10">
+                <h4>¿Cuántos pasajeros llevarán equipaje extra?</h4>
+
                 <v-form
                   ref="formEquipajeRegreso"
                   v-model="validEquipajeRegreso"
-                  class="text-center black--text fontDisplay"
+                  class="text-center black--text fontDisplay mt-3"
                   lazy-validation
                   @submit.prevent="submit"
                 >
@@ -1344,26 +1380,36 @@
               </v-card-text>
             </v-card>
 
-            <v-btn
-              color="#8C6E39"
-              class="black--text mb-4 fontTitle"
-              elevation="0"
-              rounded
-              text
-              @click="e6 = 6"
-            >
-              ATRÁS
-            </v-btn>
-            <v-btn
-              color="#8C6E39"
-              class="white--text mb-4 fontTitle"
-              elevation="0"
-              width="122px"
-              rounded
-              @click="validarEquipaje()"
-            >
-              CONTINUAR
-            </v-btn>
+            <v-row class="ma-0 pa-0">
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="black--text mb-4 fontTitle"
+                  elevation="0"
+                  rounded
+                  width="100%"
+                  text
+                  @click="e6 = 6"
+                >
+                  ATRÁS
+                </v-btn>
+              </v-col>
+
+              <v-col cols="2" class="ma-0 pa-0" />
+
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="white--text mb-4 fontTitle"
+                  elevation="0"
+                  width="100%"
+                  rounded
+                  @click="validarEquipaje()"
+                >
+                  CONTINUAR
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-stepper-content>
 
           <!-- STEP PAGO -->
@@ -1373,23 +1419,28 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">REALIZA TU PAGO</strong>
-            <small class="white--text">SOLO SE PERMITE PAGO CON TARJETA</small>
+            <small class="white--text">Solo se permite pago con tarjeta</small>
           </v-stepper-step>
 
-          <v-stepper-content :step="tipoViaje === 'sencillo' ? '5' : '8'">
-            <v-card elevation="0" class="mb-5 fontDisplay">
-              <v-card-title class="d-flex justify-center align-center">
-                <strong>TICKETS</strong>
+          <v-stepper-content :step="tipoViaje === 'sencillo' ? '5' : '8'" class="px-8 ma-0">
+            <v-card elevation="0" class="mb-10 fontDisplay text-center align-center justify-center">
+              <v-card-title class="ma-0 pa-0 mt-3 d-flex justify-center">
+                <v-row class="ma-0 pa-0 text-center justify-center">
+                  TICKETS
+                </v-row>
               </v-card-title>
+
               <v-img
                 v-if="Object.keys(routeSelected).length > 0"
                 :src="require('@/assets/back-credit-card.svg')"
-                class="mb-5"
+                class="ma-0 pa-3 py-5 mt-7"
+                style="border-radius: 30px;"
               >
-                <v-card-text rounded class="white--text text-start">
-                  <strong class="text-center">VIAJE DE IDA</strong>
+                <v-card-text class="white--text ma-0 pa-0 text-center" style="border-radius: 30px;">
+                  <strong>VIAJE DE IDA</strong>
                   <br>
                   <br>
                   <small>
@@ -1418,9 +1469,11 @@
               <v-img
                 v-if="Object.keys(routeSelectedRegreso).length > 0"
                 :src="require('@/assets/back-credit-card.svg')"
+                class="ma-0 pa-3 py-5 mt-5"
+                style="border-radius: 30px;"
               >
-                <v-card-text rounded class="white--text text-start">
-                  <strong class="text-center">VIAJE DE REGRESO</strong>
+                <v-card-text class="white--text ma-0 pa-0 text-center" style="border-radius: 30px;">
+                  <strong>VIAJE DE REGRESO</strong>
                   <br>
                   <br>
                   <small>
@@ -1446,38 +1499,46 @@
                 </v-card-text>
               </v-img>
 
-              <v-card-title class="d-flex align-end justify-end">
-                <strong>
-                  BENEFICIO PARA MIEMBROS
-                  <br>
-                  10% DE DESCUENTO
-                </strong>
-                <br>
-                <br>
-                <strong>TOTAL: ${{ total }}</strong>
-              </v-card-title>
+              <v-row class="ma-0 pa-0 mt-7 justify-center" style="font-size: 12px;">
+                * BENEFICIO PARA MIEMBROS 10% DE DESCUENTO
+              </v-row>
+
+              <v-row class="ma-0 pa-0 mt-7 justify-center">
+                TOTAL: ${{ total }}
+              </v-row>
             </v-card>
 
-            <v-btn
-              color="#8C6E39"
-              class="black--text mb-4 fontTitle"
-              elevation="0"
-              rounded
-              text
-              @click="tipoViaje === 'sencillo' ? e6 = 4 : e6 = 7"
-            >
-              ATRÁS
-            </v-btn>
-            <v-btn
-              color="#8C6E39"
-              class="white--text mb-4 fontTitle"
-              elevation="0"
-              width="122px"
-              rounded
-              @click="validarPago()"
-            >
-              PAGAR
-            </v-btn>
+            <v-row class="ma-0 pa-0">
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="black--text mb-4 fontTitle ma-0 pa-0"
+                  elevation="0"
+                  rounded
+                  width="100%"
+                  text
+                  @click="tipoViaje === 'sencillo' ? e6 = 4 : e6 = 7"
+                >
+                  ATRÁS
+                </v-btn>
+              </v-col>
+
+              <v-col cols="2" class="ma-0 pa-0" />
+
+              <v-col cols="5" class="ma-0 pa-0">
+                <v-btn
+                  color="#8C6E39"
+                  class="white--text mb-4 fontTitle ma-0 pa-0"
+                  elevation="0"
+                  width="100%"
+                  rounded
+                  @click="validarPago()"
+                >
+                  PAGAR
+                </v-btn>
+              </v-col>
+            </v-row>
+
             <v-dialog v-model="dialogPay" max-width="300" height="300" persistent>
               <v-card v-if="successPay === ''" color="#0A263D" class="pa-5 fontDisplay">
                 <v-card-text align="center" justify="center" class="white--text">
@@ -1486,20 +1547,22 @@
                   PROCESANDO PAGO
                   <br>
                   <br>
-                  CIERRE EL POPUP PARA CONTINUAR
+                  CIERRE EL POP-UP PARA CONTINUAR
                 </v-card-text>
               </v-card>
 
-              <v-card v-else-if="successPay === 'paid'" color="green darken-4" class="pa-5 fontDisplay">
-                <v-card-text align="center" justify="center" class="white--text">
+              <v-card v-else-if="successPay === 'paid'" color="#0A263D" class="ma-0 pa-5 fontDisplay align-center justify-center">
+                <v-card-text align="center" justify="center" class="ma-0 pa-0 white--text text-center align-center justify-center">
                   <v-icon large color="white">
                     mdi-check-circle-outline
                   </v-icon>
-                  <br>
-                  PAGO EXITOSO
+
+                  <v-row class="ma-0 pa-0 mt-7 text-center align-center justify-center" style="font-size: 20px;">
+                    PAGO EXITOSO
+                  </v-row>
                 </v-card-text>
 
-                <v-card-actions class="pb-0 mb-0">
+                <v-card-actions class="ma-0 pa-0 mt-8">
                   <v-row align="center" justify="center">
                     <v-col cols="12" align="center" justify="center">
                       <v-btn
@@ -1518,16 +1581,18 @@
                 </v-card-actions>
               </v-card>
 
-              <v-card v-else-if="successPay === 'unpaid'" color="red darken-4" class="pa-5 fontDisplay">
-                <v-card-text align="center" justify="center" class="white--text">
+              <v-card v-else-if="successPay === 'unpaid'" color="red darken-4" class="ma-0 pa-5 fontDisplay align-center justify-center">
+                <v-card-text align="center" justify="center" class="white--text text-center align-center justify-center">
                   <v-icon large color="white">
                     mdi-close-circle-outline
                   </v-icon>
-                  <br>
-                  PAGO CANCELADO
+
+                  <v-row class="ma-0 pa-0 mt-7 text-center align-center justify-center" style="font-size: 20px;">
+                    PAGO CANCELADO
+                  </v-row>
                 </v-card-text>
 
-                <v-card-actions class="pb-0 mb-0">
+                <v-card-actions class="ma-0 pa-0 mt-8">
                   <v-row align="center" justify="center">
                     <v-col cols="12" align="center" justify="center">
                       <v-btn
@@ -1554,21 +1619,24 @@
             class="blueBack fontTitle"
             complete-icon="mdi-check black--text"
             color="goldBack black--text"
+            style="border-radius: 30px 30px 0px 0px !important;"
           >
             <strong class="white--text">DESCARGA TU BOLETO</strong>
-            <small class="white--text">DEBERÁ PRESENTARSE EL DIA DEL VIAJE</small>
+            <small class="white--text">Deberá presentarse el día del viaje</small>
           </v-stepper-step>
 
-          <v-stepper-content :step="tipoViaje === 'sencillo' ? '6' : '9'">
-            <v-card elevation="0" class="mb-5 fontDisplay">
-              <v-card-title class="d-flex justify-center align-center">
-                <strong>COMPROBANTE</strong>
+          <v-stepper-content :step="tipoViaje === 'sencillo' ? '6' : '9'" class="px-8 ma-0">
+            <v-card elevation="0" class="ma-0 pa-0 mb-5 fontDisplay text-center justify-center align-center">
+              <v-card-title class="ma-0 pa-0 mt-3 d-flex text-center justify-center align-center">
+                <v-row class="ma-0 pa-0 text-center justify-center align-center">
+                  COMPROBANTE
+                </v-row>
               </v-card-title>
 
-              <v-card-actions class="d-flex justify-center align-center">
+              <v-card-actions class="d-flex justify-center align-center ma-0 pa-0 mt-7">
                 <v-btn
                   color="#8C6E39"
-                  class="white--text mb-4 fontTitle"
+                  class="white--text mb-4 fontTitle ma-0 pa-0"
                   elevation="0"
                   width="122px"
                   rounded
@@ -1580,8 +1648,26 @@
             </v-card>
           </v-stepper-content>
         </v-stepper>
-      </v-col>
-    </v-img>
+      </v-row>
+
+      <v-row class="ma-0 pa-0">
+        <v-col class="ma-0 pa-0">
+          <v-row class="ma-0 pa-0 py-4 blueBack">
+            <v-spacer />
+            <v-btn v-for="icon in icons" :key="icon" class="mx-4" dark icon>
+              <v-icon size="24px">
+                {{ icon }}
+              </v-icon>
+            </v-btn>
+            <v-spacer />
+          </v-row>
+
+          <v-row class="ma-0 pa-0 py-2 white--text justify-center coyoteBack">
+            {{ new Date().getFullYear() }} — <strong>&COPY; BUS BEE</strong>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-col>
   </v-row>
 </template>
 
@@ -1617,9 +1703,9 @@ export default {
       origenViaje: '',
       destinoViaje: '',
       itemsStep1: ['LEON', 'CIUDAD DE MEXICO', 'GUANAJUATO', 'MONTERREY'],
-      fechaSalidaViaje: '',
-      fechaRegresoViaje: '',
-      pasajerosViaje: '',
+      fechaSalidaViaje: new Date().toISOString().split('T')[0],
+      fechaRegresoViaje: new Date().toISOString().split('T')[0],
+      pasajerosViaje: '0',
       equipajeViaje: false,
 
       // STEP VIAJE IDA
@@ -1660,8 +1746,7 @@ export default {
         { name: 'A13', selected: false, unavailable: false },
         { name: 'A14', selected: false, unavailable: false },
         { name: 'A15', selected: false, unavailable: false },
-        { name: 'A16', selected: false, unavailable: false },
-        { name: 'A17', selected: false, unavailable: false }
+        { name: 'A16', selected: false, unavailable: false }
       ],
       itemsInfoStep3: [
         {
@@ -1682,11 +1767,12 @@ export default {
       ],
 
       // STEP EQUIPAJE IDA
-      equipajeExtra: '',
+      equipajeExtra: '0',
       validEquipaje: '',
       total: 0,
 
       // STEP VIAJE REGRESO
+      menu1: false,
       routesRegreso: [],
       routeSelectedRegreso: '',
 
@@ -1708,8 +1794,7 @@ export default {
         { name: 'A13', selected: false, unavailable: false },
         { name: 'A14', selected: false, unavailable: false },
         { name: 'A15', selected: false, unavailable: false },
-        { name: 'A16', selected: false, unavailable: false },
-        { name: 'A17', selected: false, unavailable: false }
+        { name: 'A16', selected: false, unavailable: false }
       ],
       itemsInfoRegreso: [
         {
@@ -1730,7 +1815,7 @@ export default {
       ],
 
       // STEP EQUIPAJE REGRESO
-      equipajeExtraRegreso: '',
+      equipajeExtraRegreso: '0',
       validEquipajeRegreso: '',
       totalRegreso: 0,
 
@@ -1762,6 +1847,11 @@ export default {
         v => v !== this.origenViaje || 'EL DESTINO NO PUEDE SER IGUAL AL ORIGEN'
       ],
 
+      pasajerosRule: [
+        v => !!v || 'EL NÚMERO DE PASAJEROS ES REQUERIDO',
+        v => v >= 1 || 'EL NÚMERO DE PASAJEROS DEBE DE SER MÍNIMO 1'
+      ],
+
       // STRIPE
       stripeKey: 'sk_test_51PJU8CRwWA3gXNirOlh2sPZyDCUDVUZr64Z8p9WFSB0vg3JM7g05hjXHSDIC95WE1zlcJV8f5NojTo9PCrVjprxe00kCiFwhK1',
       dialogPay: false,
@@ -1773,7 +1863,14 @@ export default {
       token: '',
       user: {},
       reservation: {},
-      reservationRegreso: {}
+      reservationRegreso: {},
+
+      // VARIABLES DE FOOTER
+      icons: [
+        'mdi-facebook',
+        'mdi-twitter',
+        'mdi-instagram'
+      ]
     }
   },
 
@@ -1785,7 +1882,11 @@ export default {
   },
 
   watch: {
-    showAlert () {}
+    showAlert () {},
+    e6 (newVal) {
+      console.log('El valor de e6 cambió a:', newVal)
+      this.scrollToStep()
+    }
   },
 
   async mounted () {},
@@ -1862,33 +1963,39 @@ export default {
     },
 
     toggleSeat (i) {
+      const index = i - 1 // Ajustar el índice para que comience en 1
+
+      if (index < 0 || index >= this.seats.length) {
+        return
+      }
+
       if (this.e6 === 3) {
-        if (this.seats[i].unavailable) {
+        if (this.seats[index].unavailable) {
           return
         }
 
-        if (this.seats[i].selected) {
+        if (this.seats[index].selected) {
           // Si el asiento está seleccionado, deseleccionarlo
-          this.seats[i].selected = false
-          this.selectedSeats = this.selectedSeats.filter(seat => seat !== this.seats[i].name)
+          this.seats[index].selected = false
+          this.selectedSeats = this.selectedSeats.filter(seat => seat !== this.seats[index].name)
         } else if (this.selectedSeats.length < this.pasajerosViaje) {
           // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
-          this.seats[i].selected = true
-          this.selectedSeats.push(this.seats[i].name)
+          this.seats[index].selected = true
+          this.selectedSeats.push(this.seats[index].name)
         }
       } else if (this.e6 === 6 && this.tipoViaje === 'redondo') {
-        if (this.seatsRegreso[i].unavailable) {
+        if (this.seatsRegreso[index].unavailable) {
           return
         }
 
-        if (this.seatsRegreso[i].selected) {
+        if (this.seatsRegreso[index].selected) {
           // Si el asiento está seleccionado, deseleccionarlo
-          this.seatsRegreso[i].selected = false
-          this.selectedSeatsRegreso = this.selectedSeatsRegreso.filter(seat => seat !== this.seats[i].name)
+          this.seatsRegreso[index].selected = false
+          this.selectedSeatsRegreso = this.selectedSeatsRegreso.filter(seat => seat !== this.seatsRegreso[index].name)
         } else if (this.selectedSeatsRegreso.length < this.pasajerosViaje) {
           // Si el asiento no está seleccionado y no se ha alcanzado el límite máximo, seleccionarlo
-          this.seatsRegreso[i].selected = true
-          this.selectedSeatsRegreso.push(this.seatsRegreso[i].name)
+          this.seatsRegreso[index].selected = true
+          this.selectedSeatsRegreso.push(this.seatsRegreso[index].name)
         }
       }
     },
@@ -1946,6 +2053,8 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.log('ERROR => ', error)
+          // eslint-disable-next-line no-console
+          console.log('PARAMS => ', params)
           this.mostrarAlerta('red', 'error', 'NO SE ENCONTRARON VIAJES DE REGRESO')
         })
     },
@@ -2098,6 +2207,7 @@ export default {
         availableSeats: this.routeSelected.seats.available - this.selectedSeats.length,
         bookedSeats: this.routeSelected.seats.booked + this.selectedSeats.length
       }
+      console.log('data: ', dataRoute)
       await this.actualizarRoute(urlRoute, dataRoute)
 
       if (this.tipoViaje === 'redondo') {
@@ -2112,7 +2222,9 @@ export default {
       }
       this.dialogPay = false
       this.tipoViaje === 'sencillo' ? this.e6 = 6 : this.e6 = 9
+      // eslint-disable-next-line no-console
       console.log('🚀 ~ .then ~ this.reservation:', this.reservation)
+      // eslint-disable-next-line no-console
       console.log('🚀 ~ .then ~ this.reservationRegreso:', this.reservationRegreso)
     },
 
@@ -2205,22 +2317,76 @@ export default {
       doc.save('comprobante.pdf')
 
       this.mostrarAlerta('green', 'success', 'COMPROBANTE DESCARGADO EXITOSAMENTE')
+    },
+
+    scrollToStep () {
+      this.$nextTick(() => {
+        const steps = this.$refs.stepper.$el.querySelectorAll('.v-stepper__step')
+        const activeStep = steps[this.e6 - 1] // Obtén el Step activo basado en el índice
+
+        if (activeStep) {
+          console.log('Step activo encontrado:', activeStep)
+
+          // Altura del `v-app-bar` fijo (si existe)
+          const appBar = document.querySelector('.v-app-bar')
+          const appBarHeight = appBar ? appBar.offsetHeight : 0
+
+          // Obtén las dimensiones del Step activo
+          const activeStepRect = activeStep.getBoundingClientRect()
+
+          // Altura visible del viewport
+          const viewportHeight = window.innerHeight
+
+          // Calcula el desplazamiento requerido para centrar el Step verticalmente
+          const offset = window.scrollY + activeStepRect.top - viewportHeight / 2 + activeStepRect.height / 2 - appBarHeight
+
+          // Ajusta el desplazamiento usando scroll suave
+          window.scrollTo({
+            top: offset,
+            behavior: 'smooth'
+          })
+        } else {
+          console.error('No se encontró el Step activo por índice')
+        }
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-.tour-card {
-  width: 100%;
-  max-width: 400px;
-}
-
 .alerta {
   position: fixed;
   top: 3.5%;
   left: 50%;
   z-index: 1000;
   transform: translate(-50%, -50%);
+}
+</style>
+
+<style>
+.v-input input {
+  justify-content: center !important;
+}
+
+.v-messages .theme--light .primary--text {
+  justify-content: center !important;
+}
+
+.v-text-field.v-text-field--solo .v-input__control input {
+  text-align: center !important;
+}
+
+.v-messages__message
+{
+  text-align: center !important;
+}
+
+.v-input__control {
+  box-shadow: none !important;
+}
+
+.v-dialog {
+  border-radius: 30px !important;
 }
 </style>
