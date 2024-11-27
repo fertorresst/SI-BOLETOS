@@ -1,12 +1,12 @@
 <template>
-  <v-row align="center" justify="center" class="d-flex flex-row align-center justify-center align-content-center">
-    <v-card elevation="0" class="ma-0 pa-5 text-center align-center justify-center" rounded>
+  <v-row align="center" justify="center" class="ma-0 pa-0 align-center justify-center" style="background-color: aliceblue !important; height: 92.8vh;">
+    <v-card elevation="0" class="ma-0 pa-0 text-center align-center justify-center" rounded color="transparent">
       <v-card-text class="ma-0 pa-0" style="font-size: 18px;">
         <v-avatar class="ma-0 pa-0 align-center justify-center" size="200">
-          <v-img class="ma-0 pa-0" :src="$store.state.user.img" />
+          <v-img class="ma-0 pa-0" :src="$store.state.user.img" style="width: 200px; height: 200px; background-size: cover; background-position: center; background-repeat: no-repeat;" />
         </v-avatar>
 
-        <v-row class="ma-0 pa-0 mt-3 align-center justify-center fontTitle" style="font-size: 23px;">
+        <v-row class="ma-0 pa-0 mt-10 align-center justify-center fontTitle" style="font-size: 23px;">
           {{ $store.state.user.nombre }} {{ $store.state.user.apellidos }}
         </v-row>
 
