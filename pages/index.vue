@@ -1,8 +1,6 @@
 <template>
   <v-row class="ma-0 pa-0" style="background-color: aliceblue !important;">
     <v-col cols="12" align="center" justify="center" class="pa-0 ma-0">
-      <ui-alert v-if="showAlert" class="alerta" />
-
       <v-row class="ma-0 pa-0 py-10 justify-center align-center">
         <v-stepper
           ref="stepper"
@@ -1674,9 +1672,7 @@
 <script>
 import JsPDF from 'jspdf'
 import { mask } from 'vue-the-mask'
-import { mapState } from 'vuex'
 import moment from 'moment'
-import uiAlert from '@/components/ui-alert.vue'
 import 'moment/locale/es'
 
 export default {
@@ -1684,10 +1680,6 @@ export default {
 
   directives: {
     mask
-  },
-
-  components: {
-    uiAlert
   },
 
   layout: 'default',
@@ -1874,35 +1866,9 @@ export default {
     }
   },
 
-  computed: {
-    ...mapState({
-      showAlert: state => state.showAlert
-      // token: state => state.token
-    })
-  },
-
-  watch: {
-    showAlert () {},
-    e6 (newVal) {
-      console.log('El valor de e6 cambió a:', newVal)
-      this.scrollToStep()
-    }
-  },
-
   async mounted () {},
 
   methods: {
-    mostrarAlerta (color, type, message) {
-      this.$store.commit('modifyAlert', true)
-      this.$store.commit('modifyColor', `${color} lighten-2`)
-      this.$store.commit('modifyIcon', color === 'green' ? 'mdi-check-circle' : 'mdi-close-circle')
-      this.$store.commit('modifyType', type)
-      this.$store.commit('modifyText', message)
-      setTimeout(() => {
-        this.$store.commit('modifyAlert', false)
-      }, 3000)
-    },
-
     validateField (field) {
       this.$refs[field].validate()
     },
@@ -2015,6 +1981,8 @@ export default {
           .then(async (res) => {
             if (res.data.success) {
               this.routes = res.data.routes
+              // eslint-disable-next-line no-console
+              console.log('this.routes ', this.routes)
               if (this.tipoViaje === 'redondo') {
                 await this.cargarViajesRegreso()
                 if (this.routesRegreso.length > 0) {
@@ -2048,6 +2016,8 @@ export default {
         .then((res) => {
           if (res.data.success) {
             this.routesRegreso = res.data.routes
+            // eslint-disable-next-line no-console
+            console.log('this.routesRegreso ', this.routesRegreso)
           }
         })
         .catch((error) => {
@@ -2067,6 +2037,12 @@ export default {
     selectTravel (route) {
       if (this.e6 === 2) {
         this.routeSelected = route
+
+        // eslint-disable-next-line no-console
+        console.log('this.routeSelected:', this.routeSelected)
+        // eslint-disable-next-line no-console
+        console.log('this.routeSelectedid:', this.routeSelected.id)
+
         const unavailableSeats = Object.keys(this.routeSelected.seats).filter(key => key.startsWith('A'))
 
         this.seats.forEach((seat) => {
@@ -2075,6 +2051,10 @@ export default {
         this.e6 = 3
       } else if (this.e6 === 5 && this.tipoViaje === 'redondo') {
         this.routeSelectedRegreso = route
+
+        // eslint-disable-next-line no-console
+        console.log('this.routeSelectedRegreso:', this.routeSelectedRegreso)
+
         const unavailableSeats = Object.keys(this.routeSelectedRegreso.seats).filter(key => key.startsWith('A'))
 
         this.seatsRegreso.forEach((seat) => {
@@ -2168,6 +2148,14 @@ export default {
         this.user = this.sessionId.slice(-10)
       }
 
+      // eslint-disable-next-line no-console
+      console.log('this.routeSelected:', this.routeSelected)
+      // eslint-disable-next-line no-console
+      console.log('this.routeSelectedid:', this.routeSelected.id)
+
+      // eslint-disable-next-line no-console
+      console.log('id act ', this.routeSelected.id)
+
       const urlReservation = '/update-reservation'
       let dataReservation = {
         user: this.user,
@@ -2179,8 +2167,12 @@ export default {
         pasajeros: this.pasajerosViaje,
         asientos: this.selectedSeats,
         costo: this.total,
-        routeId: this.routeSelected.routeId
+        routeId: this.routeSelected.id
       }
+
+      // eslint-disable-next-line no-console
+      console.log('reservation', dataReservation)
+
       await this.agregarReservacion(urlReservation, dataReservation, 1)
 
       if (this.tipoViaje === 'redondo') {
@@ -2194,25 +2186,26 @@ export default {
           pasajeros: this.pasajerosViaje,
           asientos: this.selectedSeatsRegreso,
           costo: this.total,
-          routeId: this.routeSelectedRegreso.routeId
+          routeId: this.routeSelectedRegreso.id
         }
         await this.agregarReservacion(urlReservation, dataReservation, 2)
       }
 
       const urlRoute = '/update-route'
       let dataRoute = {
-        routeId: this.routeSelected.routeId,
+        routeId: this.routeSelected.id,
         selectedSeats: this.selectedSeats,
         user: this.user,
         availableSeats: this.routeSelected.seats.available - this.selectedSeats.length,
         bookedSeats: this.routeSelected.seats.booked + this.selectedSeats.length
       }
+      // eslint-disable-next-line no-console
       console.log('data: ', dataRoute)
       await this.actualizarRoute(urlRoute, dataRoute)
 
       if (this.tipoViaje === 'redondo') {
         dataRoute = {
-          routeId: this.routeSelectedRegreso.routeId,
+          routeId: this.routeSelectedRegreso.id,
           selectedSeats: this.selectedSeatsRegreso,
           user: this.user,
           availableSeats: this.routeSelectedRegreso.seats.available - this.selectedSeatsRegreso.length,
@@ -2294,7 +2287,7 @@ export default {
 
       // Agrega datos de la reserva al PDF
       doc.text('COMPROBANTE DE RESERVA', margen, margen)
-      doc.text(`ID: ${this.reservation.routeId}`, margen, margen + 15)
+      doc.text(`ID: ${this.reservation.id}`, margen, margen + 15)
       doc.text(`USUARIO: ${this.reservation.user}`, margen, margen + 30)
       doc.text(`ORIGEN: ${this.reservation.origen}`, margen, margen + 45)
       doc.text(`DESTINO: ${this.reservation.destino}`, margen, margen + 60)
@@ -2305,7 +2298,7 @@ export default {
       if (this.tipoViaje === 'redondo' && this.reservationRegreso) {
         doc.text('', margen, margen + 105) // Espacio en blanco
         doc.text('COMPROBANTE DE RESERVA - REGRESO', margen, margen + 120)
-        doc.text(`ID: ${this.reservationRegreso.routeId}`, margen, margen + 135)
+        doc.text(`ID: ${this.reservationRegreso.id}`, margen, margen + 135)
         doc.text(`USUARIO: ${this.reservationRegreso.user}`, margen, margen + 150)
         doc.text(`ORIGEN: ${this.reservationRegreso.origen}`, margen, margen + 165)
         doc.text(`DESTINO: ${this.reservationRegreso.destino}`, margen, margen + 180)
@@ -2325,6 +2318,7 @@ export default {
         const activeStep = steps[this.e6 - 1] // Obtén el Step activo basado en el índice
 
         if (activeStep) {
+          // eslint-disable-next-line no-console
           console.log('Step activo encontrado:', activeStep)
 
           // Altura del `v-app-bar` fijo (si existe)
@@ -2346,6 +2340,7 @@ export default {
             behavior: 'smooth'
           })
         } else {
+          // eslint-disable-next-line no-console
           console.error('No se encontró el Step activo por índice')
         }
       })
@@ -2353,16 +2348,6 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.alerta {
-  position: fixed;
-  top: 3.5%;
-  left: 50%;
-  z-index: 1000;
-  transform: translate(-50%, -50%);
-}
-</style>
 
 <style>
 .v-input input {

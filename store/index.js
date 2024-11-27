@@ -39,5 +39,8 @@ export const mutations = {
   },
   setToken (state, token) {
     state.token = token
+  },
+  modifySnackbar (state, payload) {
+    state.snackbar = payload
   }
 }
