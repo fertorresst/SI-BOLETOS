@@ -1,86 +1,60 @@
 <template>
   <v-row align="center" justify="center" class="d-flex flex-row align-center justify-center align-content-center">
-    <v-col cols="12" align="center" justify="center">
-      <v-row align="center" justify="center">
-        <v-card
-          elevation="0"
-          max-width="500px"
-          class="pa-5"
-          rounded
-        >
-          <v-row align="center" justify="center">
-            <v-col cols="12" align="center" justify="center">
-              <v-avatar
-                size="128"
-              >
-                <v-img
-                  :src="$store.state.user.img"
-                />
-              </v-avatar>
-              <h2 class="text-center fontTitle">
-                {{ $store.state.user.nombre }} {{ $store.state.user.apellidos }}
-              </h2>
-              <p class="text-center fontDisplay">
-                {{ $store.state.user.email }}
-              </p>
-            </v-col>
-          </v-row>
+    <v-card elevation="0" class="ma-0 pa-5 text-center align-center justify-center" rounded>
+      <v-card-text class="ma-0 pa-0" style="font-size: 18px;">
+        <v-avatar class="ma-0 pa-0 align-center justify-center" size="200">
+          <v-img class="ma-0 pa-0" :src="$store.state.user.img" />
+        </v-avatar>
 
-          <v-card-text>
-            <v-col cols="12">
-              <h3 class="text-center fontDisplay">
-                {{ calculateAge($store.state.user.cumple) }} AÑOS
-              </h3>
-            </v-col>
+        <v-row class="ma-0 pa-0 mt-3 align-center justify-center fontTitle" style="font-size: 23px;">
+          {{ $store.state.user.nombre }} {{ $store.state.user.apellidos }}
+        </v-row>
 
-            <v-col cols="12">
-              <h3 class="text-center fontDisplay">
-                CUMPLEAÑOS:
-                <br>
-                {{ fechaFormateada($store.state.user.cumple).toUpperCase() }}
-              </h3>
-            </v-col>
+        <v-row class="ma-0 pa-0 mt-1 align-center justify-center fontDisplay">
+          {{ $store.state.user.email }}
+        </v-row>
 
-            <v-col cols="12">
-              <h3 class="text-center fontDisplay">
-                TELÉFONO:
-                <br>
-                {{ $store.state.user.telefono }}
-              </h3>
-            </v-col>
+        <v-row class="ma-0 pa-0 mt-1 align-center justify-center fontDisplay">
+          Id:  {{ $store.state.user.id }}
+        </v-row>
 
-            <v-divider class="ma-5" />
+        <v-divider class="ma-0 my-5" />
 
-            <v-row align="center" justify="center">
-              <v-col cols="12" class="text-center">
-                <h2 class="text-center fontDisplay pb-5" style="font-size: 18px;">
-                  ID DE USUARIO:
-                  <br>
-                  {{ $store.state.user.id }}
-                </h2>
-              </v-col>
-            </v-row>
-          </v-card-text>
+        <v-row class="ma-0 pa-0 mt-5 align-center justify-center fontDisplay">
+          Edad:
+        </v-row>
 
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              color="#8C6E39"
-              height="38px"
-              class="white--text"
-              rounded
-              @click="dialogProfile = true"
-            >
-              <span>EDITAR PERFIL</span>
-            </v-btn>
-            <v-spacer />
-          </v-card-actions>
-        </v-card>
-      </v-row>
-      <v-dialog v-model="dialogProfile" width="700" class="pa-0 ma-0">
-        <edit-profile @closeDialog="closeDialog" />
-      </v-dialog>
-    </v-col>
+        <v-row class="ma-0 pa-0 align-center justify-center fontDisplay">
+          {{ calculateAge($store.state.user.cumple) }} años
+        </v-row>
+
+        <v-row class="ma-0 pa-0 mt-5 align-center justify-center fontDisplay">
+          Fecha de nacimiento:
+        </v-row>
+
+        <v-row class="ma-0 pa-0 align-center justify-center fontDisplay" style="text-transform: capitalize;">
+          {{ fechaFormateada($store.state.user.cumple) }}
+        </v-row>
+
+        <v-row class="ma-0 pa-0 mt-5 align-center justify-center fontDisplay">
+          Teléfono:
+        </v-row>
+
+        <v-row class="ma-0 pa-0 align-center justify-center fontDisplay">
+          {{ $store.state.user.telefono }}
+        </v-row>
+      </v-card-text>
+
+      <v-card-actions class="ma-0 pa-0 mt-12 align-center justify-center">
+        <v-btn color="#8C6E39" height="38px" class="ma-0 pa-0 px-2 white--text" rounded @click="dialogProfile = true">
+          Editar perfil
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <v-dialog v-model="dialogProfile" width="500px" class="pa-0 ma-0">
+      <edit-profile @closeDialog="closeDialog" />
+    </v-dialog>
   </v-row>
 </template>
 
@@ -99,7 +73,7 @@ export default {
   auth: true,
   data () {
     return {
-      user: {},
+      localUser: {},
       dialogProfile: false
     }
   },

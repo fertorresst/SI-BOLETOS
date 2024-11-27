@@ -3,11 +3,16 @@
     :type="type"
     :color="color"
     :icon="icon"
-    rounded
+    width="300px"
+    height="50px"
+    class="ma-0 pa-0 text-center align-center"
+    prominent
     transition="scale-transition"
-    style="position: absolute !important;"
+    style="border-radius: 0px 0px 0px 25px !important;"
   >
-    {{ mensaje }}
+    <span style="color: white; font-size: 20px;">
+      {{ mensaje }}
+    </span>
   </v-alert>
 </template>
 
