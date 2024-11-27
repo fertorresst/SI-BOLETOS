@@ -2041,7 +2041,7 @@ export default {
         // eslint-disable-next-line no-console
         console.log('this.routeSelected:', this.routeSelected)
         // eslint-disable-next-line no-console
-        console.log('this.routeSelectedid:', this.routeSelected.id)
+        console.log('this.routeSelectedid:', this.routeSelected.routeId)
 
         const unavailableSeats = Object.keys(this.routeSelected.seats).filter(key => key.startsWith('A'))
 
@@ -2151,10 +2151,10 @@ export default {
       // eslint-disable-next-line no-console
       console.log('this.routeSelected:', this.routeSelected)
       // eslint-disable-next-line no-console
-      console.log('this.routeSelectedid:', this.routeSelected.id)
+      console.log('this.routeSelectedid:', this.routeSelected.routeId)
 
       // eslint-disable-next-line no-console
-      console.log('id act ', this.routeSelected.id)
+      console.log('id act ', this.routeSelected.routeId)
 
       const urlReservation = '/update-reservation'
       let dataReservation = {
@@ -2167,7 +2167,7 @@ export default {
         pasajeros: this.pasajerosViaje,
         asientos: this.selectedSeats,
         costo: this.total,
-        routeId: this.routeSelected.id
+        routeId: this.routeSelected.routeId
       }
 
       // eslint-disable-next-line no-console
@@ -2186,14 +2186,14 @@ export default {
           pasajeros: this.pasajerosViaje,
           asientos: this.selectedSeatsRegreso,
           costo: this.total,
-          routeId: this.routeSelectedRegreso.id
+          routeId: this.routeSelectedRegreso.routeId
         }
         await this.agregarReservacion(urlReservation, dataReservation, 2)
       }
 
       const urlRoute = '/update-route'
       let dataRoute = {
-        routeId: this.routeSelected.id,
+        routeId: this.routeSelected.routeId,
         selectedSeats: this.selectedSeats,
         user: this.user,
         availableSeats: this.routeSelected.seats.available - this.selectedSeats.length,
@@ -2205,7 +2205,7 @@ export default {
 
       if (this.tipoViaje === 'redondo') {
         dataRoute = {
-          routeId: this.routeSelectedRegreso.id,
+          routeId: this.routeSelectedRegreso.routeId,
           selectedSeats: this.selectedSeatsRegreso,
           user: this.user,
           availableSeats: this.routeSelectedRegreso.seats.available - this.selectedSeatsRegreso.length,

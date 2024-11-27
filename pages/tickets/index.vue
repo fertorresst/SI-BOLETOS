@@ -1,5 +1,5 @@
 <template>
-  <v-col class="ma-0 pa-0 py-15 align-center justify-center text-center" align="center" justify="center" style="background-color: aliceblue !important; height: 100vh;">
+  <v-col class="ma-0 pa-0 py-15 align-center justify-center text-center" align="center" justify="center" style="background-color: aliceblue !important; height: 92.8vh;">
     <v-row class="fontTitle font-weight-bold text-center align-center justify-center" style="font-size: 28px;">
       MIS BOLETOS
     </v-row>
@@ -8,44 +8,57 @@
       No hay boletos registrados
     </v-row>
 
-    <v-row v-else align="center" justify="center" class="ma-0 pa-0 mt-10 text-center align-center justify-center fontDisplay" style="font-size: 20px;">
+    <v-row v-else align="center" justify="center" class="ma-0 pa-0 mt-10 text-center align-center justify-center fontDisplay">
       <v-col v-for="ticket in tickets" :key="ticket.id" cols="12" class="d-flex flex-row flex-wrap justify-space-around align-content-space-around">
         <v-card
-          rounded
           elevation="0"
-          class="mb-5 pa-5"
-          min-width="350px"
-          max-width="500px"
+          class="mb-5 pa-7"
+          width="500px"
           color="#0A263D"
+          style="border-radius: 30px;"
         >
-          <v-card-title class="fontTitle">
-            <v-row>
+          <v-card-title class="ma-0 pa-0 white--text">
+            <v-row class="ma-0 pa-0 fontTitle align-center justify-center">
               RUTA: {{ ticket.ruta.toUpperCase() }}
             </v-row>
           </v-card-title>
 
-          <v-card-text class="white--text fontDisplay">
-            <small>Tipo: </small>
-            <strong>{{ ticket.data.tipo.toUpperCase() }}</strong>
-            <br>
-            <small>Origen: </small>
-            <strong>{{ ticket.data.origen.toUpperCase() }}</strong>
-            <br>
-            <small>Destino: </small>
-            <strong>{{ ticket.data.destino.toUpperCase() }}</strong>
-            <br>
-            <small>Fecha y hora de salida: </small>
-            <strong>{{ fechaFormateada(ticket.data.fechaSalida) }} A LAS {{ getHour(ticket.data.fechaSalida) }}</strong>
-            <br>
-            <small>Asientos: </small>
-            <strong>{{ ticket.data.asientos.join(', ') }}</strong>
-            <br>
-            <small>Costo total: </small>
-            <strong>${{ ticket.data.costo }}</strong>
-            <v-divider color="white" class="my-6" />
-            <small>ID de validación: </small>
-            <br>
-            <strong>{{ ticket.validation }}</strong>
+          <v-row class="ma-0 pa-0 align-center justify-center white--text fontDisplay" style="font-size: 14px;">
+            ID: {{ ticket.validation }}
+          </v-row>
+
+          <v-divider class="ma-0 pa-0 mt-4" style="border: 0.5px solid white;" />
+
+          <v-card-text class="ma-0 pa-0 mt-6">
+            <v-col class="ma-0 pa-0 white--text" style="font-size: 15px;">
+              <v-row class="ma-0 pa-0 align-center justify-center">
+                TIPO: {{ ticket.data.tipo.toUpperCase() }}
+              </v-row>
+
+              <v-row class="ma-0 pa-0 mt-1 align-center justify-center">
+                ORIGEN: {{ ticket.data.origen.toUpperCase() }}
+              </v-row>
+
+              <v-row class="ma-0 pa-0 mt-1 align-center justify-center">
+                DESTINO: {{ ticket.data.destino.toUpperCase() }}
+              </v-row>
+
+              <v-row class="ma-0 pa-0 mt-1 align-center justify-center">
+                FECHA: {{ fechaFormateada(ticket.data.fechaSalida) }}
+              </v-row>
+
+              <v-row class="ma-0 pa-0 mt-1 align-center justify-center">
+                HORARIO: {{ getHour(ticket.data.fechaSalida) }}
+              </v-row>
+
+              <v-row class="ma-0 pa-0 mt-1 align-center justify-center">
+                ASIENTOS: {{ ticket.data.asientos.join(', ') }}
+              </v-row>
+
+              <v-row class="ma-0 pa-0 mt-5 align-center justify-center">
+                TOTAL: ${{ ticket.data.costo }}
+              </v-row>
+            </v-col>
           </v-card-text>
         </v-card>
       </v-col>
