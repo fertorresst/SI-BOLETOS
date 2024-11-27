@@ -5,29 +5,40 @@
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
-      absolute
+      fixed
+      class="ma-0 pa-0"
       width="20%"
       color="#0A263D"
-      style="z-index: 1000; color: white;"
+      style="z-index: 1000;"
     >
-      <v-list>
-        <v-list-item>
+      <v-list class="ma-0 pa-0" style="color: white !important;">
+        <v-list-item class="ma-0 pa-7 px-7">
           <v-list-item-avatar>
-            <v-img
-              :src="$store.state.user.img"
-            />
+            <v-img :src="$store.state.user.img" />
           </v-list-item-avatar>
-          <v-list-item-content class="gray--text">
-            <v-list-item-title class="fontTitle" color="black">
-              {{ $store.state.user.nombre }} {{ $store.state.user.apellidos }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="fontTitle" color="black">
-              {{ $store.state.user.email }}
-            </v-list-item-subtitle>
+
+          <v-list-item-content class="ma-0 pa-0 white--text">
+            <v-row class="ma-0 pa-0">
+              <v-col cols="10" class="ma-0 pa-0">
+                <v-list-item-title class="fontTitle" color="white">
+                  {{ $store.state.user.nombre }} {{ $store.state.user.apellidos }}
+                </v-list-item-title>
+
+                <v-list-item-subtitle class="fontTitle" style="color: white !important;">
+                  {{ $store.state.user.email }}
+                </v-list-item-subtitle>
+              </v-col>
+
+              <v-col cols="2" class="ma-0 pa-0 d-flex align-start justify-end">
+                <v-icon small class="ma-0 pa-0" color="white" @click="drawer = false">
+                  mdi-close
+                </v-icon>
+              </v-col>
+            </v-row>
           </v-list-item-content>
         </v-list-item>
 
-        <v-divider />
+        <v-divider style="border: 0.5px white solid;" />
 
         <v-list-item
           v-for="(item, i) in items"
@@ -35,14 +46,15 @@
           :to="item.to"
           router
           exact
+          class="ma-0 pa-1 px-7"
         >
           <v-list-item-action>
-            <v-icon style="color: black;">
+            <v-icon style="color: white;">
               {{ item.icon }}
             </v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title class="fontTitle" style="color: black;">
+            <v-list-item-title class="fontTitle" style="color: white;">
               {{ item.title }}
             </v-list-item-title>
           </v-list-item-content>
@@ -50,7 +62,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar :clipped-left="clipped" app fixed color="#0A263D">
+    <v-app-bar :clipped-left="clipped" app fixed color="#0A263D" class="ma-0 pa-0">
       <v-row>
         <v-col cols="1" align="center" justify="center">
           <v-app-bar-nav-icon
@@ -101,12 +113,14 @@
       </v-row>
     </v-app-bar>
 
-    <v-main class="mb-0 pb-0">
-      <Nuxt />
-      <ui-alert v-if="showAlert" class="alerta" />
+    <v-main class="ma-0 pa-0 mt-16">
+      <v-container class="pa-0 ma-0" fluid style="display: flex !important;">
+        <Nuxt class="ma-0 pa-0" />
+        <ui-alert v-if="showAlert" class="ma-0 pa-0" style="position: absolute !important; right: 0; z-index: 1 !important;" />
+      </v-container>
     </v-main>
 
-    <v-dialog v-if="!isLogged" v-model="registerDialog" persistent max-width="400px">
+    <v-dialog v-if="!isLogged" v-model="registerDialog" persistent max-width="500px">
       <v-card rounded flat class="ma-0 pa-0">
         <v-card-title class="blueBack ma-0 pa-5 align-center justify-center">
           <v-row class="ma-0 pa-0 align-center justify-center white--text fontDisplay" style="font-size: 20px">
@@ -115,13 +129,7 @@
         </v-card-title>
 
         <v-card-text class="ma-0 py-3 px-10">
-          <v-form
-            ref="formRegister"
-            v-model="validRegister"
-            class="text-center black--text fontDisplay ma-0 pa-0"
-            lazy-validation
-            @submit.prevent="submit"
-          >
+          <v-form ref="formRegister" v-model="validRegister" class="text-center black--text fontDisplay ma-0 pa-0" lazy-validationv @submit.prevent="submit">
             <h5 class="ma-0 pa-0">
               NOMBRE
             </h5>
@@ -238,7 +246,7 @@
         </v-card-text>
 
         <v-card-actions class="pa-0 ma-0 px-10 fontDisplay" align="center" justify="center">
-          <v-col cols="6" class="ma-0 pa-0 pb-8">
+          <v-col cols="5" class="ma-0 pa-0 pb-8">
             <v-btn
               class="black--text"
               text
@@ -250,14 +258,10 @@
             </v-btn>
           </v-col>
 
-          <v-col cols="6" class="ma-0 pa-0 pb-8">
-            <v-btn
-              color="#8C6E39"
-              class="white--text"
-              width="100%"
-              rounded
-              @click="registrar()"
-            >
+          <v-col cols="2" class="ma-0 pa-0" />
+
+          <v-col cols="5" class="ma-0 pa-0 pb-8">
+            <v-btn color="#8C6E39" class="white--text" width="100%" rounded @click="registrar()">
               REGISTRAR
             </v-btn>
           </v-col>
@@ -265,7 +269,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-if="!isLogged" v-model="loginDialog" persistent max-width="400px">
+    <v-dialog v-if="!isLogged" v-model="loginDialog" persistent max-width="500px">
       <v-card rounded flat class="ma-0 pa-0">
         <v-card-title class="ma-0 pa-0 blueBack">
           <v-row class="ma-0 pa-5 white--text fontTitle align-center justify-center" style="font-size: 25px;">
@@ -349,14 +353,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import uiAlert from '@/components/ui-alert.vue'
 
 export default {
   name: 'DefaultLayout',
-
-  components: {
-    uiAlert
-  },
 
   data () {
     return {
@@ -366,17 +365,17 @@ export default {
       items: [
         {
           icon: 'mdi-home',
-          title: 'PAGINA PRINCIPAL',
+          title: 'Inicio',
           to: '/'
         },
         {
           icon: 'mdi-account',
-          title: 'MI PERFIL',
+          title: 'Perfil',
           to: '/profile'
         },
         {
           icon: 'mdi-ticket',
-          title: 'MIS TICKETS',
+          title: 'Tickets',
           to: '/tickets'
         }
       ],
@@ -439,6 +438,7 @@ export default {
       // token: state => state.token
     })
   },
+
   watch: {
     showAlert () {}
   },
@@ -519,7 +519,7 @@ export default {
           .catch((error) => {
             if (error.response && error.response.status === 409) {
               // Mostrar alerta de error por duplicidad de email
-              this.mostrarAlerta('red', 'error', 'EL EMAIL YA ESTA REGISTRADO')
+              this.mostrarAlerta('red', 'error', 'Email no  disponible')
             } else {
               // Otro tipo de error, mostrar alerta genérica
               // eslint-disable-next-line no-console
@@ -544,7 +544,7 @@ export default {
               this.$store.commit('setToken', res.data.token)
               this.obtenerDatosUsuarios()
               this.isLogged = true
-              this.mostrarAlerta('green', 'success', res.data.message)
+              this.mostrarAlerta('green', 'success', 'Sesión Iniciada')
               this.limpiarTodo()
             } else {
               this.mostrarAlerta('red', 'error', res.data.message)
@@ -552,7 +552,7 @@ export default {
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
-              this.mostrarAlerta('red', 'error', 'CREDENCIALES INVALIDAS')
+              this.mostrarAlerta('red', 'error', 'Credenciales Inválidas')
             } else {
               // eslint-disable-next-line no-console
               console.error('ERROR => ', error)
@@ -567,19 +567,9 @@ export default {
       this.$store.commit('setToken', null)
       this.$auth.logout()
       this.isLogged = false
-      this.mostrarAlerta('green', 'success', 'SESIÓN CERRADA CORRECTAMENTE')
+      this.mostrarAlerta('green', 'success', 'Sesión cerrada')
       this.$router.push('/')
     }
   }
 }
 </script>
-
-<style scoped>
-.alerta {
-  position: fixed;
-  top: 3.5%;
-  left: 50%;
-  z-index: 1000;
-  transform: translate(-50%, -50%);
-}
-</style>

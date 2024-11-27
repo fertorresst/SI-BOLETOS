@@ -1,118 +1,122 @@
 <template>
-  <v-card class="pa-10">
-    <v-card-title class="mb-10 text-center d-flex justify-center">
-      <strong class="text-center fontTitle" style="font-size: 30px;">ACTUALIZAR PERFIL</strong>
+  <v-card rounded flat class="ma-0 pa-0">
+    <v-card-title class="blueBack ma-0 pa-5 align-center justify-center">
+      <v-row class="ma-0 pa-0 align-center justify-center white--text fontDisplay" style="font-size: 20px">
+        ACTUALIZAR PERFIL
+      </v-row>
     </v-card-title>
 
-    <v-card-text>
-      <v-form
-        ref="formActualizar"
-        v-model="formActualizar"
-        lazy-validation
-        @submit.prevent="submit"
-      >
-        <h3 class="fontTitle">
+    <v-card-text class="ma-0 py-3 px-10">
+      <v-form ref="formActualizar" v-model="formActualizar" class="text-center black--text fontDisplay ma-0 pa-0" lazy-validation @submit.prevent="submit">
+        <h4 class="fontTitle ma-0 pa-0">
           FOTO DE PERFIL (URL):
-        </h3>
+        </h4>
         <v-text-field
           v-model="foto"
-          class="fontTitle"
-          dense
+          class="fontTitle ma-0 pa-0"
           solo
-          outlined
           flat
+          dense
+          outlined
           rounded
           required
           type="url"
           :rules="requiredRule"
         />
-        <h3 class="fontTitle">
+
+        <h4 class="fontTitle ma-0 pa-0">
           ID DE USUARIO:
-        </h3>
+        </h4>
         <v-text-field
           v-model="id"
-          class="fontTitle"
-          dense
+          class="fontTitle ma-0 pa-0"
           solo
-          outlined
           flat
+          dense
+          outlined
           rounded
           required
-          type="url"
+          disabled
+          type="text"
           :rules="requiredRule"
         />
-        <h3 class="fontTitle">
+
+        <h4 class="fontTitle ma-0 pa-0">
           NOMBRE:
-        </h3>
+        </h4>
         <v-text-field
           v-model="nombre"
           class="fontTitle"
-          dense
           solo
-          outlined
           flat
+          dense
+          outlined
           rounded
           required
           type="text"
           :rules="requiredRule"
         />
-        <h3 class="fontTitle">
+
+        <h4 class="fontTitle ma-0 pa-0">
           APELLIDOS:
-        </h3>
+        </h4>
         <v-text-field
           v-model="apellidos"
           class="fontTitle"
-          dense
           solo
-          outlined
           flat
+          dense
+          outlined
           rounded
           required
           type="text"
           :rules="requiredRule"
         />
-        <h3 class="fontTitle">
+
+        <h4 class="fontTitle ma-0 pa-0">
           CORREO:
-        </h3>
+        </h4>
         <v-text-field
           v-model="correo"
           class="fontTitle"
-          disabled
-          dense
           solo
-          outlined
           flat
+          dense
+          outlined
           rounded
           required
+          disabled
           type="email"
           :rules="correoRule"
         />
-        <h3 class="fontTitle">
+
+        <h4 class="fontTitle ma-0 pa-0">
           TELÉFONO:
-        </h3>
+        </h4>
         <v-text-field
           v-model="telefono"
           v-mask="'(###) ### ####'"
           class="fontTitle"
-          dense
           solo
-          outlined
           flat
+          dense
+          outlined
           rounded
           required
           type="tel"
           :rules="requiredRule"
         />
-        <h3 class="fontTitle">
+
+        <h4 class="fontTitle ma-0 pa-0">
           FECHA DE NACIMIENTO:
-        </h3>
+        </h4>
         <v-text-field
           v-model="fechaNacimiento"
           class="fontTitle"
-          dense
           solo
-          outlined
           flat
+          dense
+          outlined
           rounded
           required
           type="date"
@@ -122,22 +126,32 @@
       </v-form>
     </v-card-text>
 
-    <v-card-actions>
-      <v-row class="mb-5">
-        <v-col cols="3" />
-        <v-col cols="6">
-          <v-btn
-            block
-            color="#8C6E39"
-            height="38px"
-            rounded
-            @click="update()"
-          >
-            <span class="fontTitle" style="text-transform: none; color: white">ACTUALIZAR</span>
-          </v-btn>
-        </v-col>
-        <v-col cols="3" />
-      </v-row>
+    <v-card-actions class="pa-0 ma-0 px-10 fontDisplay" align="center" justify="center">
+      <v-col cols="5" class="ma-0 pa-0  mb-5">
+        <v-btn
+          class="black--text"
+          width="100%"
+          text
+          rounded
+          @click="closeDialog"
+        >
+          CANCELAR
+        </v-btn>
+      </v-col>
+
+      <v-col cols="2" class="ma-0 pa-0" />
+
+      <v-col cols="5" class="ma-0 pa-0  mb-5">
+        <v-btn
+          color="#8C6E39"
+          class="white--text"
+          width="100%"
+          rounded
+          @click="update()"
+        >
+          Actualizar
+        </v-btn>
+      </v-col>
     </v-card-actions>
   </v-card>
 </template>
@@ -173,7 +187,8 @@ export default {
       ],
       correoRule: [
         v => /.+@ugto\.mx$/.test(v) || 'EMAIL INCORRECTO SOLO CORREO INSTITUCIONAL'
-      ]
+      ],
+      dialogProfile: false
     }
   },
 
