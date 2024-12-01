@@ -1,21 +1,31 @@
 <template>
-  <v-row align="center" justify="center">
+  <v-row
+    align="center"
+    justify="center"
+  >
     <v-img
       :src="require('@/assets/fondo-tickets.jpg')"
     >
-      <v-col cols="12" class="text-center">
+      <v-col cols="12"
+        class="text-center"
+      >
         <h1 class="fontTitle font-weight-bold white--text">
           MIS BOLETOS
         </h1>
       </v-col>
 
-      <v-col v-if="tickets.length === 0" cols="12">
+      <v-col v-if="tickets.length === 0"
+        cols="12"
+      >
         <p class="text-center fontDisplay">
           No hay boletos registrados
         </p>
       </v-col>
 
-      <v-row v-else align="center" justify="center">
+      <v-row v-else
+        align="center"
+        justify="center"
+      >
         <v-col
           v-for="ticket in tickets"
           :key="ticket.id"
@@ -52,11 +62,29 @@
               <br>
               <small>Costo total: </small>
               <strong>${{ ticket.data.costo }}</strong>
-              <v-divider color="white" class="my-6" />
+              <v-divider color="white"
+                class="my-6"
+              />
               <small>ID de validación: </small>
               <br>
               <strong>{{ ticket.validation }}</strong>
             </v-card-text>
+
+            <v-card-actions>
+              <v-row justify="center">
+                <v-col
+                  cols="12"
+                  class="d-flex justify-center"
+                >
+                  <v-btn
+                    @click="agregarRuta"
+                    color="primary"
+                  >
+                    Agregar Nueva Ruta
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
