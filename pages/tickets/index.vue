@@ -17,10 +17,13 @@
           color="#0A263D"
           style="border-radius: 30px;"
         >
-          <v-card-title class="ma-0 pa-0 white--text">
-            <v-row class="ma-0 pa-0 fontTitle align-center justify-center">
+          <v-card-title class="ma-0 pa-0 white--text d-flex justify-space-between align-center">
+            <v-row class="ma-0 pa-0 fontTitle align-center justify-center" style="flex: 1;">
               RUTA: {{ ticket.ruta.toUpperCase() }}
             </v-row>
+            <v-btn icon class="white--text" @click="confirmarEliminacion(ticket)">
+              <v-icon>mdi-trash-can-outline</v-icon>
+            </v-btn>
           </v-card-title>
 
           <v-row class="ma-0 pa-0 align-center justify-center white--text fontDisplay" style="font-size: 14px;">
@@ -63,6 +66,22 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-dialog v-model="dialogEliminar" max-width="500">
+      <v-card :color="dialogColor">
+        <v-card-title class="black--text">
+          ¿Estás seguro de que deseas eliminar este boleto?
+        </v-card-title>
+        <v-card-actions class="justify-end">
+          <v-btn color="red darken-1" text class="dark-text" @click="dialogEliminar = false">
+            Cancelar
+          </v-btn>
+          <v-btn color="green darken-1" text class="dark-text" @click="eliminarBoleto">
+            Eliminar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-col>
 </template>
 
@@ -76,7 +95,10 @@ export default {
 
   data () {
     return {
-      tickets: {}
+      tickets: {},
+      ticketAEliminar: null,
+      dialogEliminar: false,
+      dialogColor: ''
     }
   },
 
@@ -137,11 +159,39 @@ export default {
           console.log('ERROR => ', error)
           this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL OBTENER LOS TICKETS')
         })
+    },
+    confirmarEliminacion (ticket) {
+      this.ticketAEliminar = ticket // Guarda el ticket seleccionado
+      this.dialogEliminar = true // Abre el cuadro de diálogo
+    },
+
+    eliminarBoleto () {
+      const ticketId = this.ticketAEliminar.validation // Obtén el ID del ticket a eliminar
+      const url = `/delete-ticket/${ticketId}` // Define la ruta de la API
+
+      this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
+      this.$axios.delete(url)
+        .then((res) => {
+          if (res.data.success) {
+            this.mostrarAlerta('green', 'success', 'Ticket eliminado correctamente')
+            this.dialogEliminar = false // Cierra el cuadro de diálogo
+            this.getTickets() // Vuelve a cargar los tickets para reflejar los cambios
+          } else {
+            this.mostrarAlerta('red', 'error', res.data.message)
+          }
+        })
+        .catch((error) => {
+          console.error('ERROR =>', error)
+          this.mostrarAlerta('red', 'error', 'No se pudo eliminar el ticket')
+        })
     }
   }
 }
 </script>
 
 <style scoped>
-
+.dark-text {
+  color: #333 !important;
+  font-weight: 500;
+}
 </style>
