@@ -3,7 +3,9 @@
     <v-col>
       <v-card>
         <v-card-title class="d-flex flex-row align-center justify-center">
-          <h1 class="fontTitle">DASHBOARD DE RUTAS</h1>
+          <h1 class="fontTitle">
+            DASHBOARD DE RUTAS
+          </h1>
         </v-card-title>
         <v-card-actions>
           <v-row justify="center">
@@ -27,13 +29,16 @@
           <v-container>
             <v-row>
               <v-col>
-                <h2 class="fontTitle">RUTAS ACTIVAS</h2>
+                <h2 class="fontTitle">
+                  RUTAS ACTIVAS
+                </h2>
                 <v-data-table
                   :headers="headers"
                   :items="rutasActivas"
                   class="fontDisplay"
                   flat
                   style="width: 100%;"
+                  :footer-props="footerProps"
                 >
                   <template #[`item.acciones`]="{item}">
                     <v-icon
@@ -55,15 +60,19 @@
             </v-row>
             <v-row>
               <v-col>
-                <h2 class="fontTitle">RUTAS INACTIVAS</h2>
+                <h2 class="fontTitle">
+                  RUTAS INACTIVAS
+                </h2>
                 <v-data-table
                   :headers="headers"
                   :items="rutasNoActivas"
                   flat
                   class="fontDisplay"
                   style="width: 100%;"
+                  :footer-props="footerProps"
                 >
                   <template #[`item.acciones`]="{item}">
+                    <v-spacer />
                     <v-icon
                       small
                       @click="deleteRouteDialog(item)"
@@ -125,6 +134,7 @@
               outlined
               rounded
               required
+              :disabled="dialogTitle === 'EDITAR RUTA'"
               :rules="requiredRule"
             />
 
@@ -138,6 +148,7 @@
               outlined
               rounded
               required
+              :disabled="dialogTitle === 'EDITAR RUTA'"
               :rules="requiredRule"
             />
 
@@ -192,7 +203,7 @@
               dense
               outlined
               rounded
-              :disabled = "dialogTitle === 'AGREGAR NUEVA RUTA'"
+              disabled
               :rules="[seatsAvailableRule]"
             />
 
@@ -206,6 +217,7 @@
               dense
               outlined
               rounded
+              disabled
               :rules="[seatsBookedRule]"
             />
 
@@ -267,25 +279,28 @@
     </v-dialog>
 
     <!-- Diálogo de confirmación de eliminación -->
-    <v-dialog v-model="deleteDialog"
-      max-width="500px"
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="400px"
     >
-      <v-card>
+      <v-card class="white--text blueBack">
         <v-card-title class="headline">
-          Confirmar Eliminación
+          <strong class="fontTitle">CONFIRMAR ELIMINACIÓN</strong>
         </v-card-title>
-        <v-card-text>
-          ¿Estás seguro de que deseas eliminar esta ruta?
+        <v-card-text class="fontDisplay">
+          <span class="white--text">¿Estás seguro de que deseas eliminar esta ruta?</span>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1"
+          <v-spacer />
+          <v-btn
+            color="white"
             text
             @click="closeDeleteDialog"
           >
             Cancelar
           </v-btn>
-          <v-btn color="red darken-1"
+          <v-btn
+            color="#FFD300"
             text
             @click="confirmDeleteRoute"
           >
@@ -302,6 +317,8 @@ import moment from 'moment'
 import 'moment/locale/es'
 
 export default {
+  auth: true,
+
   data () {
     return {
       search: '',
@@ -338,11 +355,20 @@ export default {
       arrivalTimeRule: [(v) => moment(v).isAfter(this.departureTime) || 'La fecha de llegada debe ser mayor a la fecha de salida'],
       seatsAvailableRule: [(v) => (parseInt(v) + parseInt(this.seatsBooked) === 16) || 'La suma de los asientos disponibles y los asientos reservados debe ser 16'],
       seatsBookedRule: [(v) => (parseInt(v) + parseInt(this.seatsAvailable) === 16) || 'La suma de los asientos disponibles y los asientos reservados debe ser 16'],
-      minDepartureTime: moment().format('YYYY-MM-DDTHH:mm')
+      minDepartureTime: moment().format('YYYY-MM-DDTHH:mm'),
+      footerProps: {
+        'items-per-page-text': 'Filas por página',
+        'items-per-page-options': [5, 10, 15, 20, 25, 50, 100]
+      }
     }
   },
 
-  mounted () {
+  created () {
+    if (this.$store.state.user && this.$store.state.token) {
+      this.getAllRoutes()
+    } else {
+      this.$router.push('/')
+    }
     this.getAllRoutes()
   },
 
@@ -373,9 +399,8 @@ export default {
     },
 
     async getAllRoutes () {
-      const params = '123'
-      const url = `/all-routes/${params}`
-      // this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
+      const url = '/all-routes'
+      this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
       await this.$axios.get(url)
         .then((res) => {
           if (res.data.success) {
@@ -400,7 +425,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.log('ERROR => ', error)
-          this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL OBTENER LOS TICKETS')
+          this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL OBTENER LAS RUTAS')
         })
     },
 
@@ -426,7 +451,7 @@ export default {
       this.routeDialog = true
     },
 
-    agregarRuta () {
+    async agregarRuta () {
       this.validForm = this.$refs.formRoute.validate()
 
       if (!this.validForm) {
@@ -447,8 +472,8 @@ export default {
       }
 
       const url = '/create-route'
-      // this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
-      this.$axios.post(url, data)
+      this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
+      await this.$axios.post(url, data)
         .then((res) => {
           if (res.data.success) {
             this.mostrarAlerta('green', 'success', 'RUTA AGREGADA CORRECTAMENTE')
@@ -480,7 +505,7 @@ export default {
       this.routeDialog = true
     },
 
-    actualizarRuta () {
+    async actualizarRuta () {
       this.validForm = this.$refs.formRoute.validate()
 
       if (!this.validForm) {
@@ -499,8 +524,8 @@ export default {
       }
 
       const url = '/create-route'
-      // this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
-      this.$axios.put(url, data)
+      this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
+      await this.$axios.put(url, data)
         .then((res) => {
           if (res.data.success) {
             this.mostrarAlerta('green', 'success', 'RUTA ACTUALIZADA CORRECTAMENTE')
@@ -527,12 +552,12 @@ export default {
       this.routeToDelete = null
     },
 
-    confirmDeleteRoute () {
+    async confirmDeleteRoute () {
       const params = this.routeToDelete.routeId.toString()
       console.log('🚀 ~ confirmDeleteRoute ~ params:', params)
       const url = `/delete-route/${params}`
-      // this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
-      this.$axios.delete(url)
+      this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
+      await this.$axios.delete(url)
         .then((res) => {
           if (res.data.success) {
             this.mostrarAlerta('green', 'success', 'RUTA ELIMINADA CORRECTAMENTE')

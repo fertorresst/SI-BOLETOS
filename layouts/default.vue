@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-navigation-drawer
-      v-if="isLogged"
+      v-if="isLogged && !isAdmin"
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
@@ -18,10 +18,16 @@
             />
           </v-list-item-avatar>
           <v-list-item-content class="gray--text">
-            <v-list-item-title class="fontTitle" color="black">
+            <v-list-item-title
+              class="fontTitle"
+              color="black"
+            >
               {{ $store.state.user.nombre }} {{ $store.state.user.apellidos }}
             </v-list-item-title>
-            <v-list-item-subtitle class="fontTitle" color="black">
+            <v-list-item-subtitle
+              class="fontTitle"
+              color="black"
+            >
               {{ $store.state.user.email }}
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -37,12 +43,17 @@
           exact
         >
           <v-list-item-action>
-            <v-icon style="color: black;">
+            <v-icon
+              style="color: black;"
+            >
               {{ item.icon }}
             </v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title class="fontTitle" style="color: black;">
+            <v-list-item-title
+              class="fontTitle"
+              style="color: black;"
+            >
               {{ item.title }}
             </v-list-item-title>
           </v-list-item-content>
@@ -58,14 +69,18 @@
       color="#0A263D"
     >
       <v-row>
-        <v-col cols="4" align="center" justify="center">
+        <v-col
+          cols="4"
+          align="center"
+          justify="center"
+        >
           <v-app-bar-nav-icon
-            v-if="isLogged"
+            v-if="isLogged && !isAdmin"
             color="#FFD300"
             @click.stop="drawer = !drawer"
           />
           <v-btn
-            v-else
+            v-else-if="!isAdmin"
             color="#FFD300"
             icon
             @click="registerDialog=true"
@@ -74,17 +89,25 @@
           </v-btn>
         </v-col>
 
-        <v-col cols="4" align="center" justify="center">
+        <v-col
+          cols="4"
+          align="center"
+          justify="center"
+        >
           <v-img
             :src="require('@/assets/logo.svg')"
             contain
             max-height="50px"
-            @click="$router.push('/')"
             style="cursor: pointer;"
+            @click="$router.push('/')"
           />
         </v-col>
 
-        <v-col cols="4" align="center" justify="center">
+        <v-col
+          cols="4"
+          align="center"
+          justify="center"
+        >
           <v-btn
             v-if="isLogged"
             elevation="0"
@@ -110,23 +133,42 @@
     <v-main>
       <v-container fluid>
         <Nuxt />
-        <ui-alert v-if="showAlert" class="alerta" />
+        <ui-alert v-if="showAlert"
+          class="alerta"
+        />
       </v-container>
     </v-main>
 
-    <v-dialog v-if="!isLogged" v-model="registerDialog" persistent max-width="400px">
-      <v-card rounded flat class="pa-0">
+    <v-dialog
+      v-if="!isLogged"
+      v-model="registerDialog"
+      persistent
+      max-width="400px"
+    >
+      <v-card
+        rounded
+        flat
+        class="pa-0"
+      >
         <v-card-title class="blueBack">
           <v-row>
-            <v-col cols="12" class="text-center mb-2">
-              <strong class="white--text fontTitle" style="font-size: 25px;">
+            <v-col
+              cols="12"
+              class="text-center mb-2"
+            >
+              <strong
+                class="white--text fontTitle"
+                style="font-size: 25px;"
+              >
                 REGÍSTRATE
               </strong>
             </v-col>
           </v-row>
         </v-card-title>
 
-        <v-card-subtitle class="text-center white--text blueBack fontDisplay">
+        <v-card-subtitle
+          class="text-center white--text blueBack fontDisplay"
+        >
           Es gratis
         </v-card-subtitle>
 
@@ -231,8 +273,15 @@
           </v-form>
         </v-card-text>
 
-        <v-card-actions class="pa-0 ma-0 fontDisplay" align="center" justify="center">
-          <v-col cols="12" class="pb-8">
+        <v-card-actions
+          class="pa-0 ma-0 fontDisplay"
+          align="center"
+          justify="center"
+        >
+          <v-col
+            cols="12"
+            class="pb-8"
+          >
             <v-btn
               color="#8C6E39"
               class="white--text"
@@ -256,19 +305,36 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-if="!isLogged" v-model="loginDialog" persistent max-width="400px">
-      <v-card rounded flat class="pa-0">
+    <v-dialog
+      v-if="!isLogged"
+      v-model="loginDialog"
+      persistent
+      max-width="400px"
+    >
+      <v-card
+        rounded
+        flat
+        class="pa-0"
+      >
         <v-card-title class="blueBack">
           <v-row>
-            <v-col cols="12" class="text-center mb-2">
-              <strong class="white--text fontTitle" style="font-size: 25px;">
+            <v-col
+              cols="12"
+              class="text-center mb-2"
+            >
+              <strong
+                class="white--text fontTitle"
+                style="font-size: 25px;"
+              >
                 LOGIN
               </strong>
             </v-col>
           </v-row>
         </v-card-title>
 
-        <v-card-subtitle class="text-center white--text blueBack fontDisplay">
+        <v-card-subtitle
+          class="text-center white--text blueBack fontDisplay"
+        >
           INTRODUCE TUS CREDENCIALES
         </v-card-subtitle>
 
@@ -308,8 +374,15 @@
           </v-form>
         </v-card-text>
 
-        <v-card-actions class="pa-0 ma-0 fontDisplay" align="center" justify="center">
-          <v-col cols="12" class="pb-8">
+        <v-card-actions
+          class="pa-0 ma-0 fontDisplay"
+          align="center"
+          justify="center"
+        >
+          <v-col
+            cols="12"
+            class="pb-8"
+          >
             <v-btn
               color="#8C6E39"
               class="white--text"
@@ -337,10 +410,20 @@
       padless
       relative
     >
-      <v-card class="flex" flat tile>
+      <v-card
+        class="flex"
+        flat
+        tile
+      >
         <v-card-title class="blueBack">
           <v-spacer />
-          <v-btn v-for="icon in icons" :key="icon" class="mx-4" dark icon>
+          <v-btn
+            v-for="icon in icons"
+            :key="icon"
+            class="mx-4"
+            dark
+            icon
+          >
             <v-icon size="24px">
               {{ icon }}
             </v-icon>
@@ -396,6 +479,7 @@ export default {
 
       // VARIABLES PARA USUARIO
       isLogged: false,
+      isAdmin: false,
       user: {},
       nombre: '',
       img: '',
@@ -421,23 +505,23 @@ export default {
 
       // RULES TEXT FIELDS
       requiredRule: [
-        v => !!v || 'CAMPO REQUERIDO'
+        (v) => !!v || 'CAMPO REQUERIDO'
       ],
       passwordRule: [
-        v => !!v || 'LA CONTRASEÑA ES REQUERIDA',
-        v => (v && v.length > 5) || 'LA CONTRASEÑA DEBE DE TENER MINIMO 6 CARACTERES'
+        (v) => !!v || 'LA CONTRASEÑA ES REQUERIDA',
+        (v) => (v && v.length > 5) || 'LA CONTRASEÑA DEBE DE TENER MINIMO 6 CARACTERES'
       ],
       passwordConfirmRule: [
-        v => !!v || 'LA CONFIRMACIÓN ES REQUERIDA',
-        v => v === this.passwordRegister || 'LAS CONTRASEÑAS NO COINCIDEN'
+        (v) => !!v || 'LA CONFIRMACIÓN ES REQUERIDA',
+        (v) => v === this.passwordRegister || 'LAS CONTRASEÑAS NO COINCIDEN'
       ],
       emailRule: [
-        v => !!v || 'EL CORREO ES REQUERIDO',
-        v => /.+@.+\..+/.test(v) || 'EL CORREO DEBE SER VALIDO'
+        (v) => !!v || 'EL CORREO ES REQUERIDO',
+        (v) => /.+@.+\..+/.test(v) || 'EL CORREO DEBE SER VALIDO'
       ],
       phoneRule: [
-        v => !!v || 'EL TELÉFONO ES REQUERIDO',
-        v => /^\d{10}$/.test(v) || 'EL TELÉFONO DEBE DE TENER 10 CARACTERES'
+        (v) => !!v || 'EL TELÉFONO ES REQUERIDO',
+        (v) => /^\d{10}$/.test(v) || 'EL TELÉFONO DEBE DE TENER 10 CARACTERES'
       ],
 
       // VARIABLES DE FOOTER
@@ -451,7 +535,7 @@ export default {
 
   computed: {
     ...mapState({
-      showAlert: state => state.showAlert
+      showAlert: (state) => state.showAlert
       // token: state => state.token
     })
   },
@@ -501,6 +585,10 @@ export default {
     registrar () {
       this.validRegister = this.$refs.formRegister.validate()
       if (this.validRegister) {
+        if (this.emailRegister.endsWith('@busbee.com')) {
+          this.mostrarAlerta('red', 'error', 'NO PUEDES REGISTRARTE CON UN CORREO @busbee.com')
+          return
+        }
         const options = {
           year: 'numeric',
           month: '2-digit',
@@ -556,12 +644,19 @@ export default {
         await this.$auth.loginWith('local', { data })
           .then((res) => {
             if (res.data.success) {
+              console.log('🚀 ~ .then ~ res.data:', res.data)
               this.$store.commit('setUser', res.data.user)
               this.$store.commit('setToken', res.data.token)
               this.obtenerDatosUsuarios()
               this.isLogged = true
               this.mostrarAlerta('green', 'success', res.data.message)
               this.limpiarTodo()
+              if (res.data.user.email && res.data.user.email.endsWith('@busbee.com')) {
+                console.log('🚀 ~ .then ~ this.emailLogin:', this.emailLogin)
+                this.isAdmin = true
+                this.limpiarTodo()
+                this.$router.push('/admin')
+              }
             } else {
               this.mostrarAlerta('red', 'error', res.data.message)
             }
@@ -583,6 +678,7 @@ export default {
       this.$store.commit('setToken', null)
       this.$auth.logout()
       this.isLogged = false
+      this.isAdmin = false
       this.mostrarAlerta('green', 'success', 'SESIÓN CERRADA CORRECTAMENTE')
       this.$router.push('/')
     }
