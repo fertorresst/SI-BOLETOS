@@ -56,7 +56,7 @@
             <v-list-item-title
               class="fontTitle"
               style="color: black;"
-            <v-list-item-title class="fontTitle" style="color: white;">
+            >
               {{ item.title }}
             </v-list-item-title>
           </v-list-item-content>
