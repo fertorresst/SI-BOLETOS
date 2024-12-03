@@ -505,23 +505,23 @@ export default {
 
       // RULES TEXT FIELDS
       requiredRule: [
-        (v) => !!v || 'CAMPO REQUERIDO'
+        v => !!v || 'CAMPO REQUERIDO'
       ],
       passwordRule: [
-        (v) => !!v || 'LA CONTRASEÑA ES REQUERIDA',
-        (v) => (v && v.length > 5) || 'LA CONTRASEÑA DEBE DE TENER MINIMO 6 CARACTERES'
+        v => !!v || 'LA CONTRASEÑA ES REQUERIDA',
+        v => (v && v.length > 5) || 'LA CONTRASEÑA DEBE DE TENER MINIMO 6 CARACTERES'
       ],
       passwordConfirmRule: [
-        (v) => !!v || 'LA CONFIRMACIÓN ES REQUERIDA',
-        (v) => v === this.passwordRegister || 'LAS CONTRASEÑAS NO COINCIDEN'
+        v => !!v || 'LA CONFIRMACIÓN ES REQUERIDA',
+        v => v === this.passwordRegister || 'LAS CONTRASEÑAS NO COINCIDEN'
       ],
       emailRule: [
-        (v) => !!v || 'EL CORREO ES REQUERIDO',
-        (v) => /.+@.+\..+/.test(v) || 'EL CORREO DEBE SER VALIDO'
+        v => !!v || 'EL CORREO ES REQUERIDO',
+        v => /.+@.+\..+/.test(v) || 'EL CORREO DEBE SER VALIDO'
       ],
       phoneRule: [
-        (v) => !!v || 'EL TELÉFONO ES REQUERIDO',
-        (v) => /^\d{10}$/.test(v) || 'EL TELÉFONO DEBE DE TENER 10 CARACTERES'
+        v => !!v || 'EL TELÉFONO ES REQUERIDO',
+        v => /^\d{10}$/.test(v) || 'EL TELÉFONO DEBE DE TENER 10 CARACTERES'
       ],
 
       // VARIABLES DE FOOTER
@@ -535,7 +535,7 @@ export default {
 
   computed: {
     ...mapState({
-      showAlert: (state) => state.showAlert
+      showAlert: state => state.showAlert
       // token: state => state.token
     })
   },

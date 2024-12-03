@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col>
-      <v-card>
+      <v-card flat>
         <v-card-title class="d-flex flex-row align-center justify-center">
           <h1 class="fontTitle">
             DASHBOARD DE RUTAS
@@ -323,10 +323,12 @@ export default {
     return {
       search: '',
       headers: [
+        { text: 'ID', value: 'routeId' },
         { text: 'ORIGEN', value: 'origin' },
         { text: 'DESTINO', value: 'destination' },
         { text: 'SALIDA', value: 'departureTime' },
         { text: 'LLEGADA', value: 'arrivalTime' },
+        { text: 'COSTO', value: 'price' },
         { text: 'ASIENTOS DISPONIBLES', value: 'seats.available' },
         { text: 'ACCIONES', value: 'acciones', sortable: false }
       ],
@@ -349,12 +351,12 @@ export default {
       seatsAvailable: '',
       seatsBooked: '',
       requiredRule: [
-        (v) => !!v || 'Este campo es requerido'
+        v => !!v || 'Este campo es requerido'
       ],
-      departureTimeRule: [(v) => moment(v).isAfter(moment()) || 'La fecha de salida debe ser mayor a la fecha y hora actual'],
-      arrivalTimeRule: [(v) => moment(v).isAfter(this.departureTime) || 'La fecha de llegada debe ser mayor a la fecha de salida'],
-      seatsAvailableRule: [(v) => (parseInt(v) + parseInt(this.seatsBooked) === 16) || 'La suma de los asientos disponibles y los asientos reservados debe ser 16'],
-      seatsBookedRule: [(v) => (parseInt(v) + parseInt(this.seatsAvailable) === 16) || 'La suma de los asientos disponibles y los asientos reservados debe ser 16'],
+      departureTimeRule: [v => moment(v).isAfter(moment()) || 'La fecha de salida debe ser mayor a la fecha y hora actual'],
+      arrivalTimeRule: [v => moment(v).isAfter(this.departureTime) || 'La fecha de llegada debe ser mayor a la fecha de salida'],
+      seatsAvailableRule: [v => (parseInt(v) + parseInt(this.seatsBooked) === 16) || 'La suma de los asientos disponibles y los asientos reservados debe ser 16'],
+      seatsBookedRule: [v => (parseInt(v) + parseInt(this.seatsAvailable) === 16) || 'La suma de los asientos disponibles y los asientos reservados debe ser 16'],
       minDepartureTime: moment().format('YYYY-MM-DDTHH:mm'),
       footerProps: {
         'items-per-page-text': 'Filas por página',
@@ -419,6 +421,7 @@ export default {
               ruta.arrivalTime = this.fechaFormateada(ruta.arrivalTime)
               ruta.departureTime = this.fechaFormateada(ruta.departureTime)
             })
+            // eslint-disable-next-line no-console
             console.log('🚀 ~ .then ~ this.rutas:', this.rutas)
           }
         })
@@ -467,8 +470,8 @@ export default {
         destination: this.destination.toUpperCase(),
         origin: this.origin.toUpperCase(),
         price: this.price,
-        seats: this.seats,
-        stops: this.stopsInput.split(',').map((stop) => stop.trim())
+        seats: this.seatsAvailable,
+        stops: this.stopsInput.split(',').map(stop => stop.trim())
       }
 
       const url = '/create-route'
@@ -493,8 +496,14 @@ export default {
     editRouteDialog (route) {
       this.dialogTitle = 'EDITAR RUTA'
       this.dialogSubtitle = 'Completa los campos para editar la ruta'
-      this.arrivalTime = route.arrivalTime
-      this.departureTime = route.departureTime
+
+      // Convierte arrivalTime y departureTime al formato adecuado
+      const arrivalTime = moment(route.arrivalTime, 'DD/MM/YYYY, HH:mm')
+      this.arrivalTime = arrivalTime.isValid() ? arrivalTime.format('YYYY-MM-DDTHH:mm') : ''
+
+      const departureTime = moment(route.departureTime, 'DD/MM/YYYY, HH:mm')
+      this.departureTime = departureTime.isValid() ? departureTime.format('YYYY-MM-DDTHH:mm') : ''
+
       this.destination = route.destination
       this.origin = route.origin
       this.price = route.price
@@ -513,17 +522,14 @@ export default {
       }
 
       const data = {
-        routeId: this.routeIdUpdate,
         arrivalTime: this.arrivalTime,
         departureTime: this.departureTime,
-        destination: this.destination.toUpperCase(),
-        origin: this.origin.toUpperCase(),
         price: this.price,
-        seats: this.seats,
-        stops: this.stopsInput.split(',').map((stop) => stop.trim())
+        stops: this.stopsInput.split(',').map(stop => stop.trim())
       }
 
-      const url = '/create-route'
+      const params = this.routeIdUpdate
+      const url = `/update-all-route/${params}`
       this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
       await this.$axios.put(url, data)
         .then((res) => {
@@ -554,7 +560,6 @@ export default {
 
     async confirmDeleteRoute () {
       const params = this.routeToDelete.routeId.toString()
-      console.log('🚀 ~ confirmDeleteRoute ~ params:', params)
       const url = `/delete-route/${params}`
       this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
       await this.$axios.delete(url)
