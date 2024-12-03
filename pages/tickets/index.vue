@@ -71,6 +71,7 @@ import moment from 'moment'
 import 'moment/locale/es'
 
 export default {
+  name: 'TicketsIndex',
   auth: true,
 
   data () {
