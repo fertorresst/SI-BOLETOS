@@ -17,8 +17,8 @@
           color="#0A263D"
           style="border-radius: 30px;"
         >
-          <v-card-title class="ma-0 pa-0 white--text d-flex align-center justify-between">
-            <v-row class="ma-0 pa-0 fontTitle align-center justify-center">
+          <v-card-title class="ma-0 pa-0 white--text d-flex justify-space-between align-center">
+            <v-row class="ma-0 pa-0 fontTitle align-center justify-center" style="flex: 1;">
               RUTA: {{ ticket.ruta.toUpperCase() }}
             </v-row>
             <v-btn icon class="white--text" @click="confirmarEliminacion(ticket)">
@@ -67,18 +67,16 @@
       </v-col>
     </v-row>
 
-    <!-- Diálogo de confirmación para eliminar boleto -->
     <v-dialog v-model="dialogEliminar" max-width="500">
       <v-card :color="dialogColor">
-        <v-card-title class="white--text">
+        <v-card-title class="black--text">
           ¿Estás seguro de que deseas eliminar este boleto?
         </v-card-title>
-
         <v-card-actions class="justify-end">
-          <v-btn color="red darken-1" text @click="dialogEliminar = false" class="dark-text">
+          <v-btn color="red darken-1" text class="dark-text" @click="dialogEliminar = false">
             Cancelar
           </v-btn>
-          <v-btn color="green darken-1" text @click="eliminarBoleto" class="dark-text">
+          <v-btn color="green darken-1" text class="dark-text" @click="eliminarBoleto">
             Eliminar
           </v-btn>
         </v-card-actions>
@@ -92,14 +90,15 @@ import moment from 'moment'
 import 'moment/locale/es'
 
 export default {
+  name: 'TicketsIndex',
   auth: true,
 
   data () {
     return {
-      tickets: [],
-      ticketSeleccionado: null,
+      tickets: {},
+      ticketAEliminar: null,
       dialogEliminar: false,
-      dialogColor: '#0A263D'
+      dialogColor: ''
     }
   },
 
@@ -109,12 +108,14 @@ export default {
     } else {
       this.$router.push('/')
     }
+    this.getTickets()
   },
 
   methods: {
     fechaFormateada (fecha) {
       let date
 
+      // Verifica si la fecha es un timestamp de Firebase
       if (fecha && typeof fecha === 'object' && '_seconds' in fecha && '_nanoseconds' in fecha) {
         date = new Date(fecha._seconds * 1000 + fecha._nanoseconds / 1000000)
       } else {
@@ -131,27 +132,15 @@ export default {
       return moment(date).format('hh:mm A')
     },
 
-    confirmarEliminacion (ticket) {
-      this.ticketSeleccionado = ticket
-      this.dialogEliminar = true
-    },
-
-    eliminarBoleto () {
-      // Aquí iría la lógica para eliminar el boleto de la base de datos, pero por ahora se comenta
-      // const url = `/delete-ticket/${this.ticketSeleccionado.id}`
-      // this.$axios.delete(url)
-      //   .then(() => {
-      //     this.tickets = this.tickets.filter(ticket => ticket.id !== this.ticketSeleccionado.id)
-      //     this.dialogEliminar = false
-      //     this.mostrarAlerta('green', 'success', 'Boleto eliminado con éxito')
-      //   })
-      //   .catch(error => {
-      //     this.mostrarAlerta('red', 'error', 'Error al eliminar el boleto')
-      //   })
-
-      // Cerramos el diálogo y simulamos la eliminación del boleto
-      this.tickets = this.tickets.filter(ticket => ticket.id !== this.ticketSeleccionado.id)
-      this.dialogEliminar = false
+    mostrarAlerta (color, type, message) {
+      this.$store.commit('modifyAlert', true)
+      this.$store.commit('modifyColor', `${color} lighten-2`)
+      this.$store.commit('modifyIcon', color === 'green' ? 'mdi-check-circle' : 'mdi-close-circle')
+      this.$store.commit('modifyType', type)
+      this.$store.commit('modifyText', message)
+      setTimeout(() => {
+        this.$store.commit('modifyAlert', false)
+      }, 3000)
     },
 
     getTickets () {
@@ -168,7 +157,32 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.log('ERROR => ', error)
-          this.mostrarAlerta('red', 'error', 'Ha ocurrido un error al obtener los boletos')
+          this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL OBTENER LOS TICKETS')
+        })
+    },
+    confirmarEliminacion (ticket) {
+      this.ticketAEliminar = ticket // Guarda el ticket seleccionado
+      this.dialogEliminar = true // Abre el cuadro de diálogo
+    },
+
+    eliminarBoleto () {
+      const ticketId = this.ticketAEliminar.validation // Obtén el ID del ticket a eliminar
+      const url = `/delete-ticket/${ticketId}` // Define la ruta de la API
+
+      this.$axios.defaults.headers.common.Authorization = `Bearer ${this.$store.state.token}`
+      this.$axios.delete(url)
+        .then((res) => {
+          if (res.data.success) {
+            this.mostrarAlerta('green', 'success', 'Ticket eliminado correctamente')
+            this.dialogEliminar = false // Cierra el cuadro de diálogo
+            this.getTickets() // Vuelve a cargar los tickets para reflejar los cambios
+          } else {
+            this.mostrarAlerta('red', 'error', res.data.message)
+          }
+        })
+        .catch((error) => {
+          console.error('ERROR =>', error)
+          this.mostrarAlerta('red', 'error', 'No se pudo eliminar el ticket')
         })
     }
   }

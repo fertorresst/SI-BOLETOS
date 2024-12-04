@@ -1,7 +1,7 @@
 <template>
   <v-app class="ma-0 pa-0">
     <v-navigation-drawer
-      v-if="isLogged"
+      v-if="isLogged && !isAdmin"
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
@@ -16,7 +16,6 @@
           <v-list-item-avatar>
             <v-img :src="$store.state.user.img" />
           </v-list-item-avatar>
-
           <v-list-item-content class="ma-0 pa-0 white--text">
             <v-row class="ma-0 pa-0">
               <v-col cols="10" class="ma-0 pa-0">
@@ -54,7 +53,10 @@
             </v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title class="fontTitle" style="color: white;">
+            <v-list-item-title
+              class="fontTitle"
+              style="color: black;"
+            >
               {{ item.title }}
             </v-list-item-title>
           </v-list-item-content>
@@ -66,12 +68,12 @@
       <v-row>
         <v-col cols="1" align="center" justify="center">
           <v-app-bar-nav-icon
-            v-if="isLogged"
+            v-if="isLogged && !isAdmin"
             color="#FFD300"
             @click.stop="drawer = !drawer"
           />
           <v-btn
-            v-else
+            v-else-if="!isAdmin"
             color="#FFD300"
             icon
             @click="registerDialog=true"
@@ -386,6 +388,7 @@ export default {
 
       // VARIABLES PARA USUARIO
       isLogged: false,
+      isAdmin: false,
       user: {},
       nombre: '',
       img: '',
@@ -485,6 +488,10 @@ export default {
     registrar () {
       this.validRegister = this.$refs.formRegister.validate()
       if (this.validRegister) {
+        if (this.emailRegister.endsWith('@busbee.com')) {
+          this.mostrarAlerta('red', 'error', 'NO PUEDES REGISTRARTE CON UN CORREO @busbee.com')
+          return
+        }
         const options = {
           year: 'numeric',
           month: '2-digit',
@@ -540,12 +547,19 @@ export default {
         await this.$auth.loginWith('local', { data })
           .then((res) => {
             if (res.data.success) {
+              console.log('🚀 ~ .then ~ res.data:', res.data)
               this.$store.commit('setUser', res.data.user)
               this.$store.commit('setToken', res.data.token)
               this.obtenerDatosUsuarios()
               this.isLogged = true
               this.mostrarAlerta('green', 'success', 'Sesión Iniciada')
               this.limpiarTodo()
+              if (res.data.user.email && res.data.user.email.endsWith('@busbee.com')) {
+                console.log('🚀 ~ .then ~ this.emailLogin:', this.emailLogin)
+                this.isAdmin = true
+                this.limpiarTodo()
+                this.$router.push('/admin')
+              }
             } else {
               this.mostrarAlerta('red', 'error', res.data.message)
             }
@@ -567,7 +581,8 @@ export default {
       this.$store.commit('setToken', null)
       this.$auth.logout()
       this.isLogged = false
-      this.mostrarAlerta('green', 'success', 'Sesión cerrada')
+      this.isAdmin = false
+      this.mostrarAlerta('green', 'success', 'SESIÓN CERRADA CORRECTAMENTE')
       this.$router.push('/')
     }
   }
