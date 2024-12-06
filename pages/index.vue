@@ -1643,6 +1643,19 @@
                   DESCARGAR
                 </v-btn>
               </v-card-actions>
+
+              <v-card-actions class="d-flex justify-center align-center ma-0 pa-0 mt-7">
+                <v-btn
+                  color="#0A263D"
+                  class="white--text mb-4 fontTitle ma-0 pa-0"
+                  elevation="0"
+                  width="200px"
+                  rounded
+                  @click="reiniciarProceso()"
+                >
+                  COMPRAR OTRO BOLETO
+                </v-btn>
+              </v-card-actions>
             </v-card>
           </v-stepper-content>
         </v-stepper>
@@ -1695,7 +1708,7 @@ export default {
       tipoViaje: 'sencillo',
       origenViaje: '',
       destinoViaje: '',
-      itemsStep1: ['LEON', 'CIUDAD DE MEXICO', 'GUANAJUATO', 'MONTERREY'],
+      itemsStep1: ['LEON', 'CIUDAD DE MEXICO', 'GUANAJUATO', 'MONTERREY', 'VALLE DE SANTIAGO'],
       fechaSalidaViaje: new Date().toISOString().split('T')[0],
       fechaRegresoViaje: new Date().toISOString().split('T')[0],
       pasajerosViaje: '0',
@@ -1858,6 +1871,9 @@ export default {
       reservation: {},
       reservationRegreso: {},
 
+      // STEP DESCARGAR COMPROBANTE
+      downloadFlag: false,
+
       // VARIABLES DE FOOTER
       icons: [
         'mdi-facebook',
@@ -1870,6 +1886,17 @@ export default {
   async mounted () {},
 
   methods: {
+    mostrarAlerta (color, type, message) {
+      this.$store.commit('modifyAlert', true)
+      this.$store.commit('modifyColor', `${color} lighten-2`)
+      this.$store.commit('modifyIcon', color === 'green' ? 'mdi-check-circle' : 'mdi-close-circle')
+      this.$store.commit('modifyType', type)
+      this.$store.commit('modifyText', message)
+      setTimeout(() => {
+        this.$store.commit('modifyAlert', false)
+      }, 3000)
+    },
+
     validateField (field) {
       this.$refs[field].validate()
     },
@@ -1982,8 +2009,6 @@ export default {
           .then(async (res) => {
             if (res.data.success) {
               this.routes = res.data.routes
-              // eslint-disable-next-line no-console
-              console.log('this.routes ', this.routes)
               if (this.tipoViaje === 'redondo') {
                 await this.cargarViajesRegreso()
                 if (this.routesRegreso.length > 0) {
@@ -1994,12 +2019,12 @@ export default {
               }
             } else {
               // eslint-disable-next-line no-console
-              console.log('ERROR: ', res.data.message)
+              console.error('ERROR: ', res.data.message)
             }
           })
           .catch((error) => {
             // eslint-disable-next-line no-console
-            console.log('ERROR => ', error)
+            console.error('ERROR => ', error)
             this.mostrarAlerta('red', 'error', 'NO SE ENCONTRARON VIAJES DE IDA')
           })
       }
@@ -2017,15 +2042,11 @@ export default {
         .then((res) => {
           if (res.data.success) {
             this.routesRegreso = res.data.routes
-            // eslint-disable-next-line no-console
-            console.log('this.routesRegreso ', this.routesRegreso)
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR => ', error)
-          // eslint-disable-next-line no-console
-          console.log('PARAMS => ', params)
+          console.error('ERROR => ', error)
           this.mostrarAlerta('red', 'error', 'NO SE ENCONTRARON VIAJES DE REGRESO')
         })
     },
@@ -2038,26 +2059,14 @@ export default {
     selectTravel (route) {
       if (this.e6 === 2) {
         this.routeSelected = route
-
-        // eslint-disable-next-line no-console
-        console.log('this.routeSelected:', this.routeSelected)
-        // eslint-disable-next-line no-console
-        console.log('this.routeSelectedid:', this.routeSelected.routeId)
-
         const unavailableSeats = Object.keys(this.routeSelected.seats).filter(key => key.startsWith('A'))
-
         this.seats.forEach((seat) => {
           seat.unavailable = unavailableSeats.includes(seat.name)
         })
         this.e6 = 3
       } else if (this.e6 === 5 && this.tipoViaje === 'redondo') {
         this.routeSelectedRegreso = route
-
-        // eslint-disable-next-line no-console
-        console.log('this.routeSelectedRegreso:', this.routeSelectedRegreso)
-
         const unavailableSeats = Object.keys(this.routeSelectedRegreso.seats).filter(key => key.startsWith('A'))
-
         this.seatsRegreso.forEach((seat) => {
           seat.unavailable = unavailableSeats.includes(seat.name)
         })
@@ -2149,14 +2158,6 @@ export default {
         this.user = this.sessionId.slice(-10)
       }
 
-      // eslint-disable-next-line no-console
-      console.log('this.routeSelected:', this.routeSelected)
-      // eslint-disable-next-line no-console
-      console.log('this.routeSelectedid:', this.routeSelected.routeId)
-
-      // eslint-disable-next-line no-console
-      console.log('id act ', this.routeSelected.routeId)
-
       const urlReservation = '/update-reservation'
       let dataReservation = {
         user: this.user,
@@ -2170,9 +2171,6 @@ export default {
         costo: this.total,
         routeId: this.routeSelected.routeId
       }
-
-      // eslint-disable-next-line no-console
-      console.log('reservation', dataReservation)
 
       await this.agregarReservacion(urlReservation, dataReservation, 1)
 
@@ -2200,8 +2198,6 @@ export default {
         availableSeats: this.routeSelected.seats.available - this.selectedSeats.length,
         bookedSeats: this.routeSelected.seats.booked + this.selectedSeats.length
       }
-      // eslint-disable-next-line no-console
-      console.log('data: ', dataRoute)
       await this.actualizarRoute(urlRoute, dataRoute)
 
       if (this.tipoViaje === 'redondo') {
@@ -2216,10 +2212,6 @@ export default {
       }
       this.dialogPay = false
       this.tipoViaje === 'sencillo' ? this.e6 = 6 : this.e6 = 9
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ .then ~ this.reservation:', this.reservation)
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ .then ~ this.reservationRegreso:', this.reservationRegreso)
     },
 
     async agregarReservacion (url, data, tipo) {
@@ -2235,7 +2227,7 @@ export default {
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR AL AGREGAR RESERVACIÓN => ', error)
+          console.error('ERROR AL AGREGAR RESERVACIÓN => ', error)
           this.mostrarAlerta('red', 'error', 'ERROR AL AGREGAR RESERVACIÓN')
         })
     },
@@ -2250,7 +2242,7 @@ export default {
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR AL ACTUALIZAR RUTA => ', error)
+          console.error('ERROR AL ACTUALIZAR RUTA => ', error)
           this.mostrarAlerta('red', 'error', 'ERROR AL ACTUALIZAR RUTA')
         })
     },
@@ -2373,6 +2365,7 @@ export default {
             width: 100
           }, (err, qrCodeUrl) => {
             if (err) {
+              // eslint-disable-next-line no-console
               console.error('Error al generar el QR:', err)
               reject(err)
               return
@@ -2414,21 +2407,21 @@ export default {
           // Guardar el documento después de agregar ambas páginas (si es necesario)
           doc.save('boleto_viaje.pdf')
           this.mostrarAlerta('green', 'success', 'COMPROBANTE(S) DESCARGADO(S) EXITOSAMENTE')
+          this.downloadFlag = true
         })
         .catch((error) => {
+          // eslint-disable-next-line no-console
           console.error('Error al descargar el comprobante:', error)
           this.mostrarAlerta('red', 'error', 'ERROR AL DESCARGAR EL COMPROBANTE')
         })
     },
+
     scrollToStep () {
       this.$nextTick(() => {
         const steps = this.$refs.stepper.$el.querySelectorAll('.v-stepper__step')
         const activeStep = steps[this.e6 - 1] // Obtén el Step activo basado en el índice
 
         if (activeStep) {
-          // eslint-disable-next-line no-console
-          console.log('Step activo encontrado:', activeStep)
-
           // Altura del `v-app-bar` fijo (si existe)
           const appBar = document.querySelector('.v-app-bar')
           const appBarHeight = appBar ? appBar.offsetHeight : 0
@@ -2452,6 +2445,27 @@ export default {
           console.error('No se encontró el Step activo por índice')
         }
       })
+    },
+
+    reiniciarProceso () {
+      // Reinicia todas las variables y estados necesarios
+      if (this.downloadFlag) {
+        this.e6 = 1
+        this.origin = ''
+        this.destination = ''
+        this.departureTime = ''
+        this.arrivalTime = ''
+        this.price = ''
+        this.seatsAvailable = ''
+        this.seatsBooked = ''
+        this.stopsInput = ''
+        this.routeDialog = false
+        this.dialogTitle = ''
+        this.dialogSubtitle = ''
+        this.validForm = false
+      } else {
+        this.mostrarAlerta('red', 'error', 'DEBES DESCARGAR EL COMPROBANTE ANTES DE COMPRAR OTRO BOLETO')
+      }
     }
   }
 }

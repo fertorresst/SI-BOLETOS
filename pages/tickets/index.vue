@@ -67,16 +67,31 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="dialogEliminar" max-width="500">
-      <v-card :color="dialogColor">
-        <v-card-title class="black--text">
-          ¿Estás seguro de que deseas eliminar este boleto?
+    <v-dialog
+      v-model="dialogEliminar"
+      max-width="400px"
+    >
+      <v-card class="white--text blueBack">
+        <v-card-title class="headline">
+          <strong class="fontTitle">CONFIRMAR ELIMINACIÓN</strong>
         </v-card-title>
-        <v-card-actions class="justify-end">
-          <v-btn color="red darken-1" text class="dark-text" @click="dialogEliminar = false">
+        <v-card-text class="fontDisplay">
+          <span class="white--text">¿Estás seguro de que deseas eliminar este boleto?</span>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="white"
+            text
+            @click="dialogEliminar = false"
+          >
             Cancelar
           </v-btn>
-          <v-btn color="green darken-1" text class="dark-text" @click="eliminarBoleto">
+          <v-btn
+            color="#FFD300"
+            text
+            @click="eliminarBoleto()"
+          >
             Eliminar
           </v-btn>
         </v-card-actions>
@@ -151,15 +166,15 @@ export default {
         .then((res) => {
           if (res.data.success) {
             this.tickets = res.data.tickets
-            console.log('🚀 ~ .then ~ this.tickets:', this.tickets)
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR => ', error)
+          console.error('ERROR => ', error)
           this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL OBTENER LOS TICKETS')
         })
     },
+
     confirmarEliminacion (ticket) {
       this.ticketAEliminar = ticket // Guarda el ticket seleccionado
       this.dialogEliminar = true // Abre el cuadro de diálogo
@@ -181,6 +196,7 @@ export default {
           }
         })
         .catch((error) => {
+          // eslint-disable-next-line no-console
           console.error('ERROR =>', error)
           this.mostrarAlerta('red', 'error', 'No se pudo eliminar el ticket')
         })
