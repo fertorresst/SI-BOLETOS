@@ -4,11 +4,11 @@
     :color="color"
     :icon="icon"
     width="300px"
-    height="50px"
+    height="auto"
     class="ma-0 pa-0 text-center align-center"
     prominent
     transition="scale-transition"
-    style="border-radius: 0px 0px 0px 25px !important;"
+    style="border-radius: 0px 0px 0px 25px !important; z-index: 9999; position: absolute;"
   >
     <span style="color: white; font-size: 20px;">
       {{ mensaje }}

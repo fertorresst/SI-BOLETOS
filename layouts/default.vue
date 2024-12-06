@@ -45,7 +45,7 @@
           :to="item.to"
           router
           exact
-          class="ma-0 pa-1 px-7"
+          class="ma-0 pa-1 px-7 white--text"
         >
           <v-list-item-action>
             <v-icon style="color: white;">
@@ -54,8 +54,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title
-              class="fontTitle"
-              style="color: black;"
+              class="fontTitle white--text"
             >
               {{ item.title }}
             </v-list-item-title>
@@ -514,8 +513,6 @@ export default {
         const url = '/register'
         this.$axios.post(url, data)
           .then((res) => {
-            // eslint-disable-next-line no-console
-            console.log('RES => ', res.data)
             if (res.data.success) {
               this.mostrarAlerta('green', 'success', res.data.message)
               this.limpiarTodo()
@@ -547,7 +544,6 @@ export default {
         await this.$auth.loginWith('local', { data })
           .then((res) => {
             if (res.data.success) {
-              console.log('🚀 ~ .then ~ res.data:', res.data)
               this.$store.commit('setUser', res.data.user)
               this.$store.commit('setToken', res.data.token)
               this.obtenerDatosUsuarios()
@@ -555,7 +551,6 @@ export default {
               this.mostrarAlerta('green', 'success', 'Sesión Iniciada')
               this.limpiarTodo()
               if (res.data.user.email && res.data.user.email.endsWith('@busbee.com')) {
-                console.log('🚀 ~ .then ~ this.emailLogin:', this.emailLogin)
                 this.isAdmin = true
                 this.limpiarTodo()
                 this.$router.push('/admin')
@@ -582,7 +577,7 @@ export default {
       this.$auth.logout()
       this.isLogged = false
       this.isAdmin = false
-      this.mostrarAlerta('green', 'success', 'SESIÓN CERRADA CORRECTAMENTE')
+      this.mostrarAlerta('green', 'success', 'SESIÓN CERRADA')
       this.$router.push('/')
     }
   }

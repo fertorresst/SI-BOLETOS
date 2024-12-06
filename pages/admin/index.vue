@@ -125,9 +125,9 @@
             @submit.prevent="submit"
           >
             <h4>ORIGEN</h4>
-            <v-text-field
+            <v-combobox
               v-model="origin"
-              type="text"
+              :items="itemsStep1"
               solo
               flat
               dense
@@ -139,9 +139,9 @@
             />
 
             <h4>DESTINO</h4>
-            <v-text-field
+            <v-combobox
               v-model="destination"
-              type="text"
+              :items="itemsStep1"
               solo
               flat
               dense
@@ -350,6 +350,7 @@ export default {
       routeIdUpdate: '',
       seatsAvailable: '',
       seatsBooked: '',
+      itemsStep1: ['LEON', 'CIUDAD DE MEXICO', 'GUANAJUATO', 'MONTERREY', 'VALLE DE SANTIAGO'],
       requiredRule: [
         v => !!v || 'Este campo es requerido'
       ],
@@ -421,13 +422,11 @@ export default {
               ruta.arrivalTime = this.fechaFormateada(ruta.arrivalTime)
               ruta.departureTime = this.fechaFormateada(ruta.departureTime)
             })
-            // eslint-disable-next-line no-console
-            console.log('🚀 ~ .then ~ this.rutas:', this.rutas)
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR => ', error)
+          console.error('ERROR => ', error)
           this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL OBTENER LAS RUTAS')
         })
     },
@@ -461,6 +460,22 @@ export default {
         return
       }
 
+      const departureTime = moment(this.departureTime, 'YYYY-MM-DDTHH:mm')
+      const arrivalTime = moment(this.arrivalTime, 'YYYY-MM-DDTHH:mm')
+      const now = moment()
+
+      // Validar que la fecha de salida sea después de la fecha y hora actual
+      if (!departureTime.isAfter(now)) {
+        this.mostrarAlerta('red', 'error', 'La fecha de salida debe ser mayor a la fecha y hora actual')
+        return
+      }
+
+      // Validar que la fecha de llegada sea después de la fecha de salida
+      if (!arrivalTime.isAfter(departureTime)) {
+        this.mostrarAlerta('red', 'error', 'La fecha de llegada debe ser mayor a la fecha de salida')
+        return
+      }
+
       const routeId = this.rutas.length + 1
 
       const data = {
@@ -471,7 +486,7 @@ export default {
         origin: this.origin.toUpperCase(),
         price: this.price,
         seats: this.seatsAvailable,
-        stops: this.stopsInput.split(',').map(stop => stop.trim())
+        stops: this.stopsInput.split(',').map(stop => stop.trim().toUpperCase())
       }
 
       const url = '/create-route'
@@ -479,7 +494,7 @@ export default {
       await this.$axios.post(url, data)
         .then((res) => {
           if (res.data.success) {
-            this.mostrarAlerta('green', 'success', 'RUTA AGREGADA CORRECTAMENTE')
+            this.mostrarAlerta('green', 'success', 'RUTA AGREGADA')
             this.getAllRoutes()
             this.limpiarTodo()
           } else {
@@ -488,7 +503,7 @@ export default {
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR => ', error)
+          console.error('ERROR => ', error)
           this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL AGREGAR LA RUTA')
         })
     },
@@ -534,7 +549,7 @@ export default {
       await this.$axios.put(url, data)
         .then((res) => {
           if (res.data.success) {
-            this.mostrarAlerta('green', 'success', 'RUTA ACTUALIZADA CORRECTAMENTE')
+            this.mostrarAlerta('green', 'success', 'RUTA ACTUALIZADA')
             this.getAllRoutes()
             this.limpiarTodo()
           } else {
@@ -543,7 +558,7 @@ export default {
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR => ', error)
+          console.error('ERROR => ', error)
           this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL ACTUALIZAR LA RUTA')
         })
     },
@@ -565,7 +580,7 @@ export default {
       await this.$axios.delete(url)
         .then((res) => {
           if (res.data.success) {
-            this.mostrarAlerta('green', 'success', 'RUTA ELIMINADA CORRECTAMENTE')
+            this.mostrarAlerta('green', 'success', 'RUTA ELIMINADA')
             this.getAllRoutes()
             this.closeDeleteDialog()
           } else {
@@ -574,7 +589,7 @@ export default {
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('ERROR => ', error)
+          console.error('ERROR => ', error)
           this.mostrarAlerta('red', 'error', 'HA OCURRIDO UN ERROR AL ELIMINAR LA RUTA')
         })
     }
