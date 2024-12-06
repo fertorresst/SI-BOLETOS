@@ -1674,6 +1674,7 @@ import JsPDF from 'jspdf'
 import { mask } from 'vue-the-mask'
 import moment from 'moment'
 import 'moment/locale/es'
+import QRCode from 'qrcode'
 
 export default {
   name: 'IndexPage',
@@ -2282,36 +2283,143 @@ export default {
     },
 
     descargarComprobante () {
-      const doc = new JsPDF('p', 'mm', 'letter') // Utiliza 'p' para orientación vertical y 'letter' para tamaño de papel
-      const margen = 15 // Establece un margen de 15 mm
-
-      // Agrega datos de la reserva al PDF
-      doc.text('COMPROBANTE DE RESERVA', margen, margen)
-      doc.text(`ID: ${this.reservation.id}`, margen, margen + 15)
-      doc.text(`USUARIO: ${this.reservation.user}`, margen, margen + 30)
-      doc.text(`ORIGEN: ${this.reservation.origen}`, margen, margen + 45)
-      doc.text(`DESTINO: ${this.reservation.destino}`, margen, margen + 60)
-      doc.text(`PRECIO: ${this.reservation.costo}`, margen, margen + 75)
-      doc.text(`ASIENTOS: ${this.reservation.asientos}`, margen, margen + 90)
-
-      // Si es viaje redondo, agregar datos de la reserva de regreso
-      if (this.tipoViaje === 'redondo' && this.reservationRegreso) {
-        doc.text('', margen, margen + 105) // Espacio en blanco
-        doc.text('COMPROBANTE DE RESERVA - REGRESO', margen, margen + 120)
-        doc.text(`ID: ${this.reservationRegreso.id}`, margen, margen + 135)
-        doc.text(`USUARIO: ${this.reservationRegreso.user}`, margen, margen + 150)
-        doc.text(`ORIGEN: ${this.reservationRegreso.origen}`, margen, margen + 165)
-        doc.text(`DESTINO: ${this.reservationRegreso.destino}`, margen, margen + 180)
-        doc.text(`PRECIO: ${this.reservationRegreso.costo}`, margen, margen + 195)
-        doc.text(`ASIENTOS: ${this.reservationRegreso.asientos}`, margen, margen + 210)
+      // Generate a consistent random reservation ID
+      const generarReservationId = () => {
+        // Generate a random 8-digit number
+        return Math.floor(10000000 + Math.random() * 90000000).toString()
       }
 
-      // Descargar el PDF
-      doc.save('comprobante.pdf')
+      const generarBoleto = (doc, reservation, routeSelected, tipoViaje, agregarNuevaPagina = false, esViajeRedondo = false) => {
+        if (agregarNuevaPagina) {
+          doc.addPage()
+        }
 
-      this.mostrarAlerta('green', 'success', 'COMPROBANTE DESCARGADO EXITOSAMENTE')
+        // Use the randomly generated reservation ID
+        const reservationId = generarReservationId()
+
+        const primaryColor = '#0A4F6E'
+        const secondaryColor = '#8C6E39'
+        const borderColor = '#808080'
+        doc.setFont('helvetica', 'normal')
+
+        doc.setFillColor(255, 255, 255)
+        doc.rect(0, 0, 210, 297, 'F')
+
+        // Dibujar un marco redondeado alrededor de todo el contenido
+        doc.setLineWidth(1.5) // Grosor del borde
+        doc.setDrawColor(borderColor)
+        doc.roundedRect(10, 10, 190, 277, 5, 5) // Borde redondeado
+
+        doc.setFontSize(28)
+        doc.setFont('helvetica', 'bold')
+        doc.setTextColor(primaryColor)
+        doc.text('BUSBEE', 105, 30, { align: 'center' })
+
+        doc.setFontSize(16)
+        doc.setTextColor(secondaryColor)
+        doc.text(tipoViaje === 'ida' ? 'DETALLES DE VIAJE - IDA' : 'DETALLES DE VIAJE - VUELTA', 105, 50, { align: 'center' })
+
+        doc.setFillColor(secondaryColor)
+        doc.rect(20, 60, 170, 15, 'F')
+        doc.setTextColor(255, 255, 255)
+        doc.setFontSize(14)
+        doc.text(tipoViaje === 'ida' ? 'BOLETO DE VIAJE - IDA' : 'BOLETO DE VIAJE - VUELTA', 105, 70, { align: 'center' })
+
+        doc.setTextColor(0, 0, 0)
+
+        doc.setFont('helvetica', 'bold')
+        doc.text('ID Reservación:', 30, 90)
+        doc.text('Usuario:', 30, 100)
+        doc.text('Origen:', 30, 110)
+        doc.text('Destino:', 30, 120)
+        doc.text('Fecha:', 30, 130)
+        doc.text('Hora de Salida:', 30, 140)
+        doc.text('Asientos:', 30, 150)
+
+        // Cambiar a texto normal para los valores
+        doc.setFont('helvetica', 'normal')
+        doc.text(`${reservationId}`, 80, 90)
+        doc.text(`${reservation.user}`, 80, 100)
+        doc.text(`${reservation.origen}`, 80, 110)
+        doc.text(`${reservation.destino}`, 80, 120)
+        doc.text(`${this.fechaFormateada(routeSelected.departureTime)}`, 80, 130)
+        doc.text(`${this.getHour(routeSelected.departureTime)}`, 80, 140)
+        doc.text(`${reservation.asientos.join(', ')}`, 80, 150)
+
+        // Precio total alineado a la derecha
+        doc.setFontSize(18)
+        doc.setTextColor(primaryColor)
+        doc.setFont('helvetica', 'bold')
+        doc.text(`Precio Total: $${reservation.costo}`, 170, 180, { align: 'right' })
+
+        // Añadir nota centrada debajo del precio total (solo si es viaje redondo)
+        if (esViajeRedondo) {
+          const messageWidth = doc.getTextWidth('*Precio incluye boleto de ida y vuelta')
+          doc.setFontSize(10)
+          doc.setTextColor(255, 0, 0)
+          doc.text('*Precio incluye boleto de ida y vuelta', 198 - messageWidth / 2, 190, { align: 'center' })
+        }
+
+        // Mensaje de validación con QR
+        const validationMessage = `BOLETO VÁLIDO - ID: ${reservationId} - VIAJE: ${reservation.origen} a ${reservation.destino}`
+
+        // Generar código QR
+        return new Promise((resolve, reject) => {
+          QRCode.toDataURL(validationMessage, {
+            errorCorrectionLevel: 'H',
+            type: 'image/png',
+            quality: 0.3,
+            margin: 1,
+            width: 100
+          }, (err, qrCodeUrl) => {
+            if (err) {
+              console.error('Error al generar el QR:', err)
+              reject(err)
+              return
+            }
+
+            // Ajustar la posición del código QR
+            const qrCenterX = (210 - 40) / 2
+            doc.addImage(qrCodeUrl, 'PNG', qrCenterX, 200, 40, 40)
+
+            // Texto explicativo del QR
+            doc.setFontSize(8)
+            doc.setTextColor(0, 0, 0)
+            doc.text('Escanea para validar el boleto', 105, 245, { align: 'center' })
+
+            doc.setTextColor(primaryColor)
+            doc.setFontSize(10)
+            doc.text('¡Gracias por viajar con nosotros!', 105, 255, { align: 'center' })
+
+            resolve()
+          })
+        })
+      }
+
+      // Crear un nuevo documento
+      const doc = new JsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      })
+
+      // Descargar boleto de ida
+      generarBoleto(doc, this.reservation, this.routeSelected, 'ida', false, this.tipoViaje === 'redondo')
+        .then(() => {
+          if (this.tipoViaje === 'redondo' && this.reservationRegreso) {
+            return generarBoleto(doc, this.reservationRegreso, this.routeSelectedRegreso, 'regreso', true, true)
+          }
+        })
+        .then(() => {
+          // Guardar el documento después de agregar ambas páginas (si es necesario)
+          doc.save('boleto_viaje.pdf')
+          this.mostrarAlerta('green', 'success', 'COMPROBANTE(S) DESCARGADO(S) EXITOSAMENTE')
+        })
+        .catch((error) => {
+          console.error('Error al descargar el comprobante:', error)
+          this.mostrarAlerta('red', 'error', 'ERROR AL DESCARGAR EL COMPROBANTE')
+        })
     },
-
     scrollToStep () {
       this.$nextTick(() => {
         const steps = this.$refs.stepper.$el.querySelectorAll('.v-stepper__step')
